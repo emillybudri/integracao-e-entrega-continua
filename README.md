@@ -18,21 +18,9 @@ Este repositório reúne os projetos, guias e atividades práticas desenvolvidas
 
 ---
 
-## Estrutura do Repositório
-
-```text
-integracao-e-entrega-continua/
-├── ativ-01/
-│   ├── Guia-de-Versionamento-e-Colaboracao.md  # Guia completo ilustrado de Git, CI/CD e comandos
-│   └── images/                                 # Capturas e evidências visuais das etapas
-└── README.md                                   # Documentação principal do repositório
-```
-
----
-
 ## Conteúdos e Atividades
 
-### Atividade 01: Guia de Versionamento e Colaboração
+### Atividade 01 (12/08/2026): Guia de Versionamento e Colaboração
 Localizado em [`ativ-01/Guia-de-Versionamento-e-Colaboracao.md`](ativ-01/Guia-de-Versionamento-e-Colaboracao.md).
 
 O guia aborda:
@@ -58,24 +46,6 @@ feat/minha-feature (Desenvolvimento da Funcionalidade)
 2. **Integração (CI)**: Ao abrir o Pull Request da branch `feat/*` para `dev`, a pipeline de CI executa os testes automatizados.
 3. **Revisão**: O código passa por Code Review antes da mesclagem na `dev`.
 4. **Entrega (CD)**: O merge na branch `dev` dispara o deploy em ambiente de homologação. Após validação, o código segue para `main` via novo PR.
-
----
-
-## Como Utilizar este Repositório
-
-Clonar o repositório localmente:
-
-```bash
-git clone git@github.com:emillybudri/integracao-e-entrega-continua.git
-cd integracao-e-entrega-continua
-```
-
-Alternar para a branch de desenvolvimento:
-
-```bash
-git switch dev
-git pull origin dev
-```
 
 ---
 
