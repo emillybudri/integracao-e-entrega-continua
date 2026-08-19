@@ -13,6 +13,9 @@ on:
       - '.github/workflows/ativ-02-pipeline.yml'
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 jobs:
   # Job 1: Testes de Soma
   teste-soma:
@@ -25,7 +28,7 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Instalar dependências
         run: |
@@ -48,7 +51,7 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Instalar dependências
         run: |
@@ -71,7 +74,7 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Instalar dependências
         run: |
@@ -94,7 +97,7 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Instalar dependências
         run: |
@@ -105,3 +108,13 @@ jobs:
         run: |
           cd ativ-02
           npm run test:divisao
+
+  # Job 5: Deploy
+  deploy:
+    name: Deploy
+    needs: [teste-soma, teste-subtracao, teste-multiplicacao, teste-divisao]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Executar Deploy
+        run: echo "Deploy Realizado"
+

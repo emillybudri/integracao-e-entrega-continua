@@ -30,7 +30,7 @@ O guia aborda:
 - **Operações Avançadas e Resolução de Conflitos**: Uso de `rebase`, `amend`, `reset`, `restore`, `revert`, `stash` e `cherry-pick`.
 - **Guia Rápido de Comandos**: Resumo consolidado de comandos do terminal.
 
-### Atividade 02: Calculadora JavaScript, Testes Automatizados com Jest e CI GitHub Actions
+### Atividade 02 (19/08/2026): Calculadora JavaScript, Testes Automatizados com Jest e CI GitHub Actions
 Localizado na pasta [`ativ-02/`](ativ-02/).
 
 A atividade consiste em uma aplicação de calculadora em JavaScript (Node.js) executada via terminal, com cobertura de testes unitários em Jest e automação de CI no GitHub Actions:
