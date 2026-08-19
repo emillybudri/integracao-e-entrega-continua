@@ -1,0 +1,20 @@
+{
+  "name": "ativ-02-calculadora",
+  "version": "1.0.0",
+  "description": "Calculadora via terminal em Node.js com testes unitários Jest e CI no GitHub Actions",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest --ci",
+    "test:soma": "jest tests/soma.test.js --ci",
+    "test:subtracao": "jest tests/subtracao.test.js --ci",
+    "test:multiplicacao": "jest tests/multiplicacao.test.js --ci",
+    "test:divisao": "jest tests/divisao.test.js --ci"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
