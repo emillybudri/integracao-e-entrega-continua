@@ -3,8 +3,16 @@ name: Primeira Pipeline - 19/08/2026
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - 'test_exemplo.py'
+      - '*.py'
+      - '.github/workflows/primeira-pipeline-19-08-2026.yml'
   pull_request:
     branches: [ "main" ]
+    paths:
+      - 'test_exemplo.py'
+      - '*.py'
+      - '.github/workflows/primeira-pipeline-19-08-2026.yml'
   workflow_dispatch:
 
 jobs:

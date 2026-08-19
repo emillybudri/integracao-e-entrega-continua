@@ -3,6 +3,15 @@ name: Pipeline Calculadora - Atividade 02
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - 'ativ-02/**'
+      - '.github/workflows/ativ-02-pipeline.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'ativ-02/**'
+      - '.github/workflows/ativ-02-pipeline.yml'
+  workflow_dispatch:
 
 jobs:
   # Job 1: Testes de Soma
