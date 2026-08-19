@@ -30,6 +30,45 @@ O guia aborda:
 - **Operações Avançadas e Resolução de Conflitos**: Uso de `rebase`, `amend`, `reset`, `restore`, `revert`, `stash` e `cherry-pick`.
 - **Guia Rápido de Comandos**: Resumo consolidado de comandos do terminal.
 
+### Atividade 02: Calculadora JavaScript, Testes Automatizados com Jest e CI GitHub Actions
+Localizado na pasta [`ativ-02/`](ativ-02/).
+
+A atividade consiste em uma aplicação de calculadora em JavaScript (Node.js) executada via terminal, com cobertura de testes unitários em Jest e automação de CI no GitHub Actions:
+
+- **Execução no Terminal ([`ativ-02/index.js`](ativ-02/index.js))**: Interface interativa via linha de comando (CLI) construída com o módulo `readline`.
+- **Lógica Matemática ([`ativ-02/calculator.js`](ativ-02/calculator.js))**: Módulo central contendo as 4 operações básicas (`soma`, `subtracao`, `multiplicacao`, `divisao`) com tratamento de divisão por zero.
+- **Suíte de Testes Automatizados ([`ativ-02/tests/`](ativ-02/tests/))**: casos de teste com **Jest** divididos em arquivos por operação:
+  - `tests/soma.test.js`
+  - `tests/subtracao.test.js`
+  - `tests/multiplicacao.test.js`
+  - `tests/divisao.test.js`
+- **Esteira de CI no GitHub Actions ([`.github/workflows/ativ-02-pipeline.yml`](.github/workflows/ativ-02-pipeline.yml))**: Pipeline configurada em `ubuntu-latest` que roda 4 jobs independentes em paralelo (`teste-soma`, `teste-subtracao`, `teste-multiplicacao`, `teste-divisao`) a cada `push` para a branch `main`.
+
+#### Como Executar
+
+1. **Navegar até a pasta da atividade**:
+   ```bash
+   cd ativ-02
+   ```
+
+2. **Instalar as dependências**:
+   ```bash
+   npm install
+   ```
+
+3. **Executar a Calculadora no Terminal**:
+   ```bash
+   npm start
+   # ou: node index.js
+   ```
+
+4. **Executar os Testes Automatizados (Jest)**:
+   - **Todos os testes**: `npm test`
+   - **Teste de Soma**: `npm run test:soma`
+   - **Teste de Subtração**: `npm run test:subtracao`
+   - **Teste de Multiplicação**: `npm run test:multiplicacao`
+   - **Teste de Divisão**: `npm run test:divisao`
+
 ---
 
 ## Fluxo de Versionamento Adotado

@@ -1,0 +1,98 @@
+name: Pipeline Calculadora - Atividade 02
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  # Job 1: Testes de Soma
+  teste-soma:
+    name: Teste de Soma
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependências
+        run: |
+          cd ativ-02
+          npm install
+
+      - name: Executar teste de soma
+        run: |
+          cd ativ-02
+          npm run test:soma
+
+  # Job 2: Testes de Subtração
+  teste-subtracao:
+    name: Teste de Subtração
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependências
+        run: |
+          cd ativ-02
+          npm install
+
+      - name: Executar teste de subtração
+        run: |
+          cd ativ-02
+          npm run test:subtracao
+
+  # Job 3: Testes de Multiplicação
+  teste-multiplicacao:
+    name: Teste de Multiplicação
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependências
+        run: |
+          cd ativ-02
+          npm install
+
+      - name: Executar teste de multiplicação
+        run: |
+          cd ativ-02
+          npm run test:multiplicacao
+
+  # Job 4: Testes de Divisão
+  teste-divisao:
+    name: Teste de Divisão
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependências
+        run: |
+          cd ativ-02
+          npm install
+
+      - name: Executar teste de divisão
+        run: |
+          cd ativ-02
+          npm run test:divisao
