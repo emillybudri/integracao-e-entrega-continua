@@ -22,3 +22,9 @@ jobs:
 
     - name: Executar testes
       run: pytest
+
+  deploy:
+    needs: teste
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Deploy Realizado"
