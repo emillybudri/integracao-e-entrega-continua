@@ -1,0 +1,6 @@
+name: Primeira Pipeline - 19/08/2026
+
+on:
+  push:
+    branches: [ "main" ]
+    
