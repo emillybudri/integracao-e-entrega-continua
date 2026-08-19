@@ -3,7 +3,10 @@ name: Primeira Pipeline - 19/08/2026
 on:
   push:
     branches: [ "main" ]
-    
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
 jobs:
   teste:
     runs-on: ubuntu-latest
@@ -28,3 +31,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "Deploy Realizado"
+
