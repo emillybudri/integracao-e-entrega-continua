@@ -11,7 +11,6 @@ on:
     paths:
       - 'ativ-02/**'
       - '.github/workflows/ativ-02-pipeline.yml'
-  workflow_dispatch:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
