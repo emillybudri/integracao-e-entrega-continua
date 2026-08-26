@@ -1,0 +1,104 @@
+name: Atividade 04 - Pipeline Qualidade/Seguranca com JavaScript (26/08/2026)
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+    paths:
+      - 'ativ-04/**'
+      - '.github/workflows/ativ-04-pipeline-qualidade-seguranca-js.yml'
+  pull_request:
+    branches: [ "main", "dev" ]
+    paths:
+      - 'ativ-04/**'
+      - '.github/workflows/ativ-04-pipeline-qualidade-seguranca-js.yml'
+
+jobs:
+  analise-linter:
+    name: Analise de Codigo (Linter)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Instalar dependencias
+        working-directory: ativ-04
+        run: npm install
+
+      - name: Executar linter
+        working-directory: ativ-04
+        run: npm run lint
+
+  testes-unitarios:
+    name: Testes Unitarios
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Instalar dependencias
+        working-directory: ativ-04
+        run: npm install
+
+      - name: Executar testes unitarios
+        working-directory: ativ-04
+        run: npm test
+
+  cobertura-codigo:
+    name: Cobertura de Codigo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Instalar dependencias
+        working-directory: ativ-04
+        run: npm install
+
+      - name: Validar cobertura minima
+        working-directory: ativ-04
+        run: npm run test:coverage
+
+  analise-seguranca:
+    name: Analise de Seguranca
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Instalar dependencias
+        working-directory: ativ-04
+        run: npm install
+
+      - name: Executar analise de seguranca
+        working-directory: ativ-04
+        run: npm run security:check
+
+  deploy:
+    name: Deploy
+    needs: [analise-linter, testes-unitarios, cobertura-codigo, analise-seguranca]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Executar deploy
+        run: |
+          echo "Todas as validacoes passaram com sucesso."
+          echo "Deploy realizado."
