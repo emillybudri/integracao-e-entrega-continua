@@ -10,7 +10,7 @@ const {
 describe("Testes Unitarios", () => {
   describe("Operacoes Matematicas", () => {
     test("Deve somar dois numeros corretamente", () => {
-      expect(soma(2, 3)).toBe(5);
+      expect(soma(2, 3)).toBe(999);
     });
 
     test("Deve subtrair dois numeros corretamente", () => {
