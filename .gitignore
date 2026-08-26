@@ -1,6 +1,8 @@
-# Node dependencies
+# Node dependencies & coverage
 node_modules/
 **/node_modules/
+coverage/
+**/coverage/
 
 # Python cache
 __pycache__/
@@ -11,3 +13,4 @@ __pycache__/
 *.log
 npm-debug.log*
 .DS_Store
+
