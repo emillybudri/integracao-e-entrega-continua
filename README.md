@@ -73,6 +73,7 @@ integracao-e-entrega-continua/
 │       ├── multiplicacao.test.js
 │       └── divisao.test.js
 ├── test_exemplo.py
+├── test_soma.py
 └── README.md
 ```
 

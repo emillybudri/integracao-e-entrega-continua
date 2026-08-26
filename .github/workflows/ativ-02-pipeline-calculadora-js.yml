@@ -5,12 +5,12 @@ on:
     branches: [ "main", "dev" ]
     paths:
       - 'ativ-02/**'
-      - '.github/workflows/ativ-02-pipeline.yml'
+      - '.github/workflows/ativ-02-pipeline-calculadora-js.yml'
   pull_request:
     branches: [ "main", "dev" ]
     paths:
       - 'ativ-02/**'
-      - '.github/workflows/ativ-02-pipeline.yml'
+      - '.github/workflows/ativ-02-pipeline-calculadora-js.yml'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
