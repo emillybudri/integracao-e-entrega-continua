@@ -53,6 +53,18 @@ Este repositório reúne os estudos, atividades práticas e pipelines de automa�
 
 ---
 
+### Atividade 04 (26/08/2026) - Pipeline CI de Qualidade e Segurança (JavaScript)
+- **Código e Documentação**: Pasta [`ativ-04/`](ativ-04/)
+  - [`README.md`](ativ-04/README.md): Guia da atividade e instruções para simulação dos 4 cenários de falha (Lint, Testes, Cobertura, Segredos).
+  - [`src/app.js`](ativ-04/src/app.js) e [`tests/app.test.js`](ativ-04/tests/app.test.js): Aplicação e testes unitários em Jest.
+  - [`scripts/check-secrets.js`](ativ-04/scripts/check-secrets.js): Script de segurança estática para varredura de credenciais e chaves expostas.
+- **Workflow de CI**: [`.github/workflows/ativ-04-pipeline-qualidade-seguranca-js.yml`](.github/workflows/ativ-04-pipeline-qualidade-seguranca-js.yml)
+  - **Nome no GitHub Actions**: `Atividade 04 - Pipeline CI com JavaScript (26/08/2026)`
+  - **Tecnologia**: Node.js v22 (`ESLint`, `Jest`, `Jest Coverage >= 80%`, `Secret Scanning`).
+  - **Estrutura**: Esteira com 4 validações (`analise-linter`, `testes-unitarios`, `cobertura-codigo`, `analise-seguranca`) executando antes do job de `deploy`.
+
+---
+
 ## 🗂️ Estrutura do Repositório
 
 ```text
@@ -62,7 +74,8 @@ integracao-e-entrega-continua/
 │       ├── 01-estrutura-padrao.yml                       # Estudo & Resumo para Prova
 │       ├── ativ-01-primeira-pipeline-py.yml              # Atividade 01 (19/08/2026)
 │       ├── ativ-02-pipeline-calculadora-js.yml           # Atividade 02 (19/08/2026)
-│       └── ativ-03-pipeline-linguagem-favorita-js.yml    # Atividade 03 (26/08/2026)
+│       ├── ativ-03-pipeline-linguagem-favorita-js.yml    # Atividade 03 (26/08/2026)
+│       └── ativ-04-pipeline-qualidade-seguranca-js.yml   # Atividade 04 (26/08/2026)
 ├── ativ-01/
 │   ├── Guia-de-Versionamento-e-Colaboracao.md
 │   └── test_exemplo.py                                   # Teste em Python da Atividade 01
@@ -75,6 +88,16 @@ integracao-e-entrega-continua/
 │       ├── subtracao.test.js
 │       ├── multiplicacao.test.js
 │       └── divisao.test.js
+├── ativ-04/
+│   ├── eslint.config.js                                  # Configuração do Linter (ESLint)
+│   ├── package.json                                      # Scripts e limite de cobertura (80%)
+│   ├── README.md                                         # Guia da Atividade 04 e Desafio
+│   ├── scripts/
+│   │   └── check-secrets.js                              # Scanner de chaves de API expostas
+│   ├── src/
+│   │   └── app.js                                        # Aplicação em JS
+│   └── tests/
+│       └── app.test.js                                   # Testes unitários Jest
 ├── estudos/
 │   └── test_soma.py                                     # Teste em Python do Estudo 01
 └── README.md
