@@ -1,0 +1,25 @@
+name: Atividade 03 - Pipeline na Linguagem Favorita -> JavaScript (26/08/2026)
+on:
+  push:
+    branches: [main, dev]
+
+jobs:
+  teste:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar Código
+        uses: actions/checkout@v4
+
+      - name: Configurar linguagem
+        uses: actions/setup-node@v4                       # Action oficial para instalar e disponibilizar o Node.js no PATH
+        with:                                             # Bloco de parâmetros extras para a action acima
+          node-version: "22"                              # Versão específica do Node.js a ser configurada (formato chave/valor)
+
+      - name: Instalar dependencias
+        working-directory: ativ-02                        # Define o diretório de execução para a pasta 'ativ-02' (onde fica o package.json) - só usei esse arquivo pois já estava pronto
+        run: npm install                                  # Comando único. Dica: Para rodar múltiplos comandos no terminal, usa-se '|' após 'run:'
+
+      - name: Executar testes
+        working-directory: ativ-02                        # Define o diretório de execução para a pasta 'ativ-02'
+        run: npm test                                     # Executa os testes automatizados em JavaScript via Jest (npm test)
