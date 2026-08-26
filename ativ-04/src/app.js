@@ -4,8 +4,6 @@
 // Simulação do desafio: Erro de lint (descomentar para falhar linter)
 // const variavelSemUso = "erro_de_lint"
 
-const API_KEY_EXPOSTA = "sk_live_1234567890abcdef1234567890";
-
 function soma(a, b) {
   return a + b;
 }
