@@ -38,6 +38,13 @@ function formataMoeda(valor) {
   return `R$ ${valor.toFixed(2).replace(".", ",")}`;
 }
 
+function funcaoSemTesteNaoCoberta(parametro) {
+  if (parametro === "A") return 1;
+  if (parametro === "B") return 2;
+  if (parametro === "C") return 3;
+  return 0;
+}
+
 // Simulação do desafio: Cobertura abaixo do limite (descomentar sem criar teste)
 // function funcaoSemTesteNaoCoberta(parametro) {
 //   if (parametro === "A") return 1;
