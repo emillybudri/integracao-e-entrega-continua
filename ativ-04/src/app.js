@@ -1,5 +1,5 @@
 // Simulação do desafio: Chave de API exposta (descomentar para falhar analise de seguranca)
-// const API_KEY_EXPOSTA = "sk_live_1234567890abcdef1234567890";
+// const API_KEY_EXPOSTA = "chave_falsa_1234567890";
 
 // Simulação do desafio: Erro de lint (descomentar para falhar linter)
 // const variavelSemUso = "erro_de_lint"

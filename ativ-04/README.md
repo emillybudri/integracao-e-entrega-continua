@@ -57,5 +57,5 @@ npm install
 - **Resultado**: O comando `npm run test:coverage` falhará pois a cobertura ficará abaixo de 80%.
 
 ### 4. Chave de API Exposta
-- **Como simular**: Em `src/app.js`, descomente a linha `const API_KEY_EXPOSTA = "sk_live_1234567890abcdef1234567890";`.
+- **Como simular**: Em `src/app.js`, descomente a linha `const API_KEY_EXPOSTA = "chave_falsa_1234567890";`.
 - **Resultado**: O comando `npm run security:check` indicará a presença de um segredo exposto e interromperá a execução.
