@@ -17,6 +17,7 @@ Este repositório reúne os estudos, atividades práticas e pipelines de automa�
 
 ### 📝 [`01-estrutura-padrao.yml`](.github/workflows/01-estrutura-padrao.yml) - Estrutura Padrão de Workflow
 - **Finalidade**: Anotação essencial e guia de estudos com explicações detalhadas linha a linha sobre a sintaxe YAML e a estrutura básica de um workflow do GitHub Actions (`name`, `on`, `jobs`, `runs-on`, `steps`, `uses`, `with`, `run`).
+- **Arquivo de Teste Relacionado**: [`estudos/test_soma.py`](estudos/test_soma.py) (teste unitário em Python executado pelo workflow no diretório `estudos/`).
 - **Linguagem demonstrativa**: Python 3.12 com Pytest.
 
 ---
@@ -72,8 +73,9 @@ integracao-e-entrega-continua/
 │       ├── subtracao.test.js
 │       ├── multiplicacao.test.js
 │       └── divisao.test.js
-├── test_exemplo.py
-├── test_soma.py
+├── estudos/
+│   ├── test_exemplo.py
+│   └── test_soma.py                                     # Teste associado ao 01-estrutura-padrao.yml
 └── README.md
 ```
 

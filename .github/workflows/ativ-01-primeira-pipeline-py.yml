@@ -4,13 +4,13 @@ on:
   push:
     branches: [ "main", "dev" ]
     paths:
-      - 'test_exemplo.py'
+      - 'estudos/**'
       - '*.py'
       - '.github/workflows/ativ-01-primeira-pipeline-py.yml'
   pull_request:
     branches: [ "main", "dev" ]
     paths:
-      - 'test_exemplo.py'
+      - 'estudos/**'
       - '*.py'
       - '.github/workflows/ativ-01-primeira-pipeline-py.yml'
 

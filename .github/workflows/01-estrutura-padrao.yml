@@ -22,4 +22,5 @@ jobs:                                                     # Bloco que agrupa tod
         run: pip install pytest                           # Executa comando de terminal no shell da VM (instala o Pytest via pip)
 
       - name: Executar soma                               # Nome da etapa de execução dos testes automatizados
-        run: pytest test_soma.py                          # Roda o pytest especificamente no arquivo de testes indicado
+        working-directory: estudos                        # Define o diretório de execução para a pasta 'estudos' onde está o test_soma.py
+        run: pytest test_soma.py                          # Roda o pytest no arquivo test_soma.py dentro de 'estudos'
