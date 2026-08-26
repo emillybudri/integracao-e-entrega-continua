@@ -4,6 +4,8 @@
 // Simulação do desafio: Erro de lint (descomentar para falhar linter)
 // const variavelSemUso = "erro_de_lint"
 
+const variavelSemUso = "erro_de_lint";
+
 function soma(a, b) {
   return a + b;
 }
