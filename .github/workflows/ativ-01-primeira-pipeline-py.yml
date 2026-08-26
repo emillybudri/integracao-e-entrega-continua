@@ -1,24 +1,25 @@
-name: Primeira Pipeline - 19/08/2026
+name: Atividade 01 - Primeira Pipeline de CI com Python (19/08/2026)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
     paths:
       - 'test_exemplo.py'
       - '*.py'
-      - '.github/workflows/primeira-pipeline-19-08-2026.yml'
+      - '.github/workflows/ativ-01-primeira-pipeline.yml'
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
     paths:
       - 'test_exemplo.py'
       - '*.py'
-      - '.github/workflows/primeira-pipeline-19-08-2026.yml'
+      - '.github/workflows/ativ-01-primeira-pipeline.yml'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 jobs:
   teste:
+    name: Testes Python
     runs-on: ubuntu-latest
     
     steps:
@@ -37,8 +38,9 @@ jobs:
       run: pytest
 
   deploy:
+    name: Deploy
     needs: teste
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Deploy Realizado"
-
+      - name: Executar Deploy
+        run: echo "Deploy Realizado"

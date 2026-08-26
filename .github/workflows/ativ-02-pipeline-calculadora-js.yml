@@ -1,13 +1,13 @@
-name: Pipeline Calculadora - Atividade 02
+name: Atividade 02 - Pipeline Calculadora de CI com JavaScript (19/08/2026)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
     paths:
       - 'ativ-02/**'
       - '.github/workflows/ativ-02-pipeline.yml'
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
     paths:
       - 'ativ-02/**'
       - '.github/workflows/ativ-02-pipeline.yml'
@@ -116,4 +116,3 @@ jobs:
     steps:
       - name: Executar Deploy
         run: echo "Deploy Realizado"
-
