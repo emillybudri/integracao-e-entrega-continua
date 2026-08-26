@@ -25,8 +25,9 @@ Este repositório reúne os estudos, atividades práticas e pipelines de automa�
 ## 🛠️ Atividades Práticas e Workflows (Linha do Tempo)
 
 ### 🚀 Atividade 01 (19/08/2026) - Primeira Pipeline de CI com Python
-- **Documentação**: [`ativ-01/Guia-de-Versionamento-e-Colaboracao.md`](ativ-01/Guia-de-Versionamento-e-Colaboracao.md)
-  - Manual sobre Git, GitHub, branching (`main` ← `dev` ← `feat/*`), Pull Requests, Code Review e resolução de conflitos.
+- **Código e Documentação**: Pasta [`ativ-01/`](ativ-01/)
+  - [`Guia-de-Versionamento-e-Colaboracao.md`](ativ-01/Guia-de-Versionamento-e-Colaboracao.md): Manual sobre Git, GitHub, branching (`main` ← `dev` ← `feat/*`), Pull Requests, Code Review e resolução de conflitos.
+  - [`test_exemplo.py`](ativ-01/test_exemplo.py): Teste unitário automatizado em Python da Atividade 01.
 - **Workflow de CI**: [`.github/workflows/ativ-01-primeira-pipeline-py.yml`](.github/workflows/ativ-01-primeira-pipeline-py.yml)
   - **Nome no GitHub Actions**: `Atividade 01 - Primeira Pipeline de CI com Python (19/08/2026)`
   - **Tecnologia**: Python 3.12 (`pytest`).
@@ -63,7 +64,8 @@ integracao-e-entrega-continua/
 │       ├── ativ-02-pipeline-calculadora-js.yml           # Atividade 02 (19/08/2026)
 │       └── ativ-03-pipeline-linguagem-favorita-js.yml    # Atividade 03 (26/08/2026)
 ├── ativ-01/
-│   └── Guia-de-Versionamento-e-Colaboracao.md
+│   ├── Guia-de-Versionamento-e-Colaboracao.md
+│   └── test_exemplo.py                                   # Teste em Python da Atividade 01
 ├── ativ-02/
 │   ├── calculator.js
 │   ├── index.js
@@ -74,8 +76,7 @@ integracao-e-entrega-continua/
 │       ├── multiplicacao.test.js
 │       └── divisao.test.js
 ├── estudos/
-│   ├── test_exemplo.py
-│   └── test_soma.py                                     # Teste associado ao 01-estrutura-padrao.yml
+│   └── test_soma.py                                     # Teste em Python do Estudo 01
 └── README.md
 ```
 

@@ -4,14 +4,12 @@ on:
   push:
     branches: [ "main", "dev" ]
     paths:
-      - 'estudos/**'
-      - '*.py'
+      - 'ativ-01/**'
       - '.github/workflows/ativ-01-primeira-pipeline-py.yml'
   pull_request:
     branches: [ "main", "dev" ]
     paths:
-      - 'estudos/**'
-      - '*.py'
+      - 'ativ-01/**'
       - '.github/workflows/ativ-01-primeira-pipeline-py.yml'
 
 env:
@@ -35,6 +33,7 @@ jobs:
       run: pip install pytest
 
     - name: Executar testes
+      working-directory: ativ-01
       run: pytest
 
   deploy:
