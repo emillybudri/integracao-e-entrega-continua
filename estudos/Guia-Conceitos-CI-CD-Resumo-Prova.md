@@ -324,76 +324,142 @@ O `requirements.txt` é um arquivo de texto simples usado no ecossistema Python 
 
 ---
 
-## ☁️ 8. Passo a Passo Atualizado do SonarCloud no GitHub Actions
+## ☁️ 8. Passo a Passo Completo do SonarQube Cloud Integrado com Pipeline Python
 
-O **SonarCloud** é uma plataforma em nuvem para **Análise Estática de Código (SAST)** que avalia **Bugs, Vulnerabilidades, Code Smells, Duplicações** e aplica o **Quality Gate** (Portão de Qualidade).
+O **SonarQube Cloud** (antigo SonarCloud) é a plataforma oficial de **Análise Estática de Código (SAST)** para auditoria de **Bugs, Vulnerabilidades, Code Smells, Cobertura de Código e Duplicações** aplicando o **Quality Gate**.
 
-```text
-[ Commit / Pull Request ] ──► [ GitHub Actions executa os testes ]
-                                              │
-                                              ▼
-[ Quality Gate: Aprovado/Reprovado ] ◄── [ SonarCloud analisa o código ]
-```
+---
 
-### 📋 Passo a Passo Oficial e Atualizado de Configuração
+### 📋 Passo a Passo Oficial de Configuração (12 Etapas da Aula)
 
-#### Passo 1: Importar o Repositório no SonarCloud
-1. Acesse [sonarcloud.io](https://sonarcloud.io) e faça login com sua conta do GitHub.
-2. Clique em **+ (Plus)** no canto superior direito ➔ **Analyze new project**.
-3. Selecione sua Organização do GitHub e escolha o repositório do projeto.
+#### 01. Criar conta no SonarQube Cloud
+- Acesse: [sonarcloud.io](https://sonarcloud.io)
+- Clique em **Log in with GitHub**.
+- Autorize o acesso.
 
-#### Passo 2: Gerar o Token de Segurança no SonarCloud
-1. No SonarCloud, clique na foto do seu perfil ➔ **My Account**.
-2. Acesse a aba **Security**.
-3. No campo **Generate Token**, digite um nome (ex: `GITHUB_ACTIONS_TOKEN`) e clique em **Generate**. Copie o token gerado.
+#### 02. Importar o projeto
+- No SonarQube Cloud, clique em **Analyze new project**.
+- Selecione o repositório GitHub.
+- Escolha a configuração com **GitHub Actions**.
+- Siga o tutorial apresentado pelo SonarQube Cloud.
 
-#### Passo 3: Cadastrar o Segredo no GitHub
-1. No seu repositório do GitHub, acesse **Settings ➔ Secrets and variables ➔ Actions**.
-2. Clique no botão **New repository secret**.
-3. **Name**: `SONAR_TOKEN`
-4. **Secret**: Cole o token copiado do SonarCloud e clique em **Add secret**.
+#### 03. Criar o TOKEN
+- No SonarQube Cloud, acesse a área de tokens da conta.
+- Crie um token para o GitHub Actions.
+- **Nome sugerido**: `github-actions`
+- Clique em **Generate** e copie o token.
 
-#### Passo 4: Criar o Arquivo `sonar-project.properties` na Raiz do Repositório
-Crie um arquivo chamado `sonar-project.properties` na raiz do seu projeto informando as chaves obtidas no painel do SonarCloud:
+#### 04. Colocar token no GitHub
+- No seu repositório no GitHub:
+  `Settings` ➔ `Secrets and variables` ➔ `Actions`
+- Clique em **New repository secret**.
+  - **Name**: `SONAR_TOKEN`
+  - **Value**: (cole o token copiado)
 
-```properties
-sonar.organization=sua-organizacao-sonar
-sonar.projectKey=sua-organizacao_seu-repositorio
-sonar.sources=.
-sonar.exclusions=**/node_modules/**,**/tests/**,**/coverage/**
-sonar.tests=.
-sonar.test.inclusions=**/*.test.js,**/test_*.py
-sonar.python.version=3.12
-```
+#### 05. Configurar o projeto (`sonar-project.properties`)
+- Na raiz do projeto Python, crie o arquivo `sonar-project.properties`.
+- Adicione a configuração básica do projeto:
+  ```properties
+  sonar.projectKey=SEU_PROJECT_KEY
+  sonar.organization=SUA_ORGANIZATION
+  sonar.sources=.
+  sonar.exclusions=.venv/**,venv/**,tests/**
+  sonar.python.version=3.12
+  ```
+  *(Utilize os valores exatos de `projectKey` e `organization` apresentados pelo SonarQube Cloud).*
 
-#### Passo 5: Criar o Workflow do SonarCloud no GitHub Actions (`.github/workflows/sonarcloud.yml`)
+#### 06. Desativar Automatic Analysis (CRÍTICO)
+- No projeto do SonarQube Cloud, vá em:
+  `Administration` ➔ `Analysis Method`
+- Se **Automatic Analysis** estiver ativado, **desative** (para evitar conflitos entre a análise automática e a pipeline do GitHub Actions).
+
+#### 07. Adicionar o SonarQube na pipeline
+- No seu workflow (ex: `.github/workflows/ci.yml`), adicione após a etapa de testes:
+  ```yaml
+  - name: Análise com SonarQube
+    uses: SonarSource/sonarqube-scan-action@v7
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  ```
+
+#### 08. Pipeline Python Completa Utilizada na Aula (`.github/workflows/ci.yml`)
 
 ```yaml
-name: Analise de Qualidade - SonarCloud
+name: CI
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [main]
 
 jobs:
-  sonarcloud:
-    name: Analise do SonarCloud
-    runs-on: ubuntu-latest
+  quality:
+    runs-on: ubuntu-24.04
     steps:
-      - name: Baixar Código com Histórico Completo
+      - name: Baixar código
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # OBRIGATÓRIO: O SonarCloud precisa do histórico do Git para atribuir autoria das linhas
 
-      - name: Executar SonarCloud Scanner
-        uses: SonarSource/sonarcloud-github-action@master
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Instalar dependências
+        run: |
+          pip install -r requirements.txt
+
+      - name: Executar Linter
+        run: |
+          flake8 .
+
+      - name: Executar testes
+        run: |
+          pytest --cov=. --cov-report=xml
+
+      - name: Análise com SonarQube
+        uses: SonarSource/sonarqube-scan-action@v7
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Token automático do GitHub para ler PRs
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Token cadastrado nos Secrets do repositório
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+```
+
+#### 09. Executar a pipeline
+Faça o commit e envie as alterações para o GitHub:
+```bash
+git add .
+git commit -m "Integração com SonarQube"
+git push
+```
+Acesse **GitHub ➔ Actions** e verifique se a etapa **Análise com SonarQube** foi executada com sucesso.
+
+#### 10. Ver os resultados
+Volte ao projeto no SonarQube Cloud e verifique os principais resultados da análise:
+- **Bugs**
+- **Vulnerabilities**
+- **Code Smells**
+- **Coverage**
+- **Duplications**
+- **Quality Gate**
+
+#### 11. Testar a detecção do SonarQube (Simulação de Erro de Qualidade)
+Introduza propositalmente um problema de qualidade no código Python (ex: variável declarada mas nunca utilizada):
+
+```python
+def calcular_total(valor):
+    resultado = valor * 2
+    numero = 10 # Code Smell: variável atribuída mas nunca utilizada!
+    return resultado
+```
+Execute novamente a pipeline (`git commit` + `git push`) e verifique o alerta de qualidade gerado no SonarQube.
+
+#### 12. Corrigir o problema e validar o ciclo
+Corrija o problema identificado no código Python, faça um novo commit e push.
+
+```text
+Alterar código ──► Commit ──► Pipeline (CI) ──► SonarQube ──► Corrigir ──► Nova execução (Quality Gate Aprovado)
 ```
 
 ---
 
-Com este guia unificado, você tem **100% do conteúdo das aulas 01 a 05** e todas as seções trazidas até aqui organizadas sem nenhuma perda de informação!
+Com este guia unificado, você tem **100% do conteúdo das aulas 01 a 05** e todas as seções organizadas sem nenhuma perda de informação!
