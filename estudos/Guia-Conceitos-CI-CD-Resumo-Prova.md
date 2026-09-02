@@ -135,7 +135,40 @@ strategy:
 
 ---
 
+## ⚡ 7. Caching de Dependências em CI/CD
+
+### 🚨 O Problema Sem Cache
+Ao rodar múltiplos jobs (como em uma matriz com 6 ambientes), cada máquina virtual inicia **do zero** e precisa baixar e instalar todas as dependências da internet via `pip` ou `npm`. Isso gera:
+- **Lenteza**: Vários minutos perdidos rebaixando os mesmos arquivos em cada execução.
+- **Gasto desnecessário de rede e minutos**: Consumo desnecessário da cota do GitHub Actions.
+- **Risco de falhas externas**: Se o PyPI ou npm ficarem fora do ar momentaneamente, a pipeline inteira quebra.
+
+### 💾 O que é Cache e Como Funciona?
+- **Conceito**: É o armazenamento temporário em nuvem dos pacotes já baixados para reutilização em execuções futuras.
+- **Como funciona**:
+  1. **Primeira Execução**: A máquina baixa os pacotes da internet, instala e salva o diretório no **Cache** do GitHub.
+  2. **Execuções Seguintes**: O GitHub Actions reconhece os pacotes salvos no Cache, pula o download externo e **restaura tudo em 2 a 3 segundos**.
+
+### 💻 Como Usar no GitHub Actions (`cache: 'pip'`)
+Nas actions oficiais como `actions/setup-python` ou `actions/setup-node`, basta adicionar o parâmetro `cache`:
+
+```yaml
+- name: Configurar Python
+  uses: actions/setup-python@v5
+  with:
+    python-version: ${{ matrix.python-version }}
+    cache: 'pip' # Habilita o cache automático das dependências do pip
+```
+
+### 📈 Ganhos ao Utilizar Cache
+1. **Velocidade**: A etapa de instalação passa de minutos para escassos segundos.
+2. **Economia Financeira**: Reduz consideravelmente os minutos consumidos dos runners pagos.
+3. **Resiliência**: Garante a execução da pipeline mesmo se repositórios públicos externos apresentarem lentidão.
+
+---
+
 ## 📝 Workflows Práticos no Repositório
 
 - **[Workflow 01 - Estrutura Padrão](../.github/workflows/01-estrutura-padrao.yml)**: Estudo da sintaxe fundamental YAML.
 - **[Workflow 02 - Conceitos Avançados](../.github/workflows/02-estudo-conceitos-avancados.yml)**: Aplicação prática de Paralelo, Sequencial, DevSecOps, Matrix e E2E.
+- **[Workflow Atividade 05](../.github/workflows/ativ-05-pipeline-matrix-py.yml)**: Pipeline em Matrix com 6 combinações utilizando `cache: 'pip'`.

@@ -33,6 +33,12 @@ jobs:
 
 ---
 
+## ⚡ Otimização com Caching (`cache: 'pip'`)
+
+Para evitar rebaixar todas as dependências a cada execução da matriz, o parâmetro `cache: 'pip'` foi adicionado à action `actions/setup-python@v5`. Isso garante que as dependências sejam salvas na primeira execução e restauradas em segundos nas seguintes.
+
+---
+
 ## 🗂️ Arquivos da Atividade
 
 - **Workflow**: [`.github/workflows/ativ-05-pipeline-matrix-py.yml`](../.github/workflows/ativ-05-pipeline-matrix-py.yml)
