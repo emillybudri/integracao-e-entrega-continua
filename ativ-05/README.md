@@ -6,10 +6,10 @@ Esta atividade modifica o pipeline de CI para utilizar a estratégia de **Matrix
 
 ## 📌 Requisitos da Atividade
 
-1. **Sistemas Operacionais (SO)**: 3 versões recomendadas do Ubuntu no GitHub Actions:
-   - `ubuntu-22.04` (Ubuntu 22)
-   - `ubuntu-23.04` (Ubuntu 23)
-   - `ubuntu-24.04` (Ubuntu 24)
+1. **Sistemas Operacionais (SO)**: 3 versões válidas de Ubuntu no GitHub Actions:
+   - `ubuntu-latest`
+   - `ubuntu-24.04`
+   - `ubuntu-22.04`
 2. **Versões do Python**:
    - `3.10`
    - `3.11`
@@ -27,7 +27,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, ubuntu-23.04, ubuntu-24.04]
+        os: [ubuntu-latest, ubuntu-24.04, ubuntu-22.04]
         python-version: ['3.10', '3.11']
 ```
 
