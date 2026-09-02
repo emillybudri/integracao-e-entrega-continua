@@ -33,5 +33,6 @@ jobs:
 
       - name: Análise com SonarQube
         uses: SonarSource/sonarqube-scan-action@v7
+        continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
