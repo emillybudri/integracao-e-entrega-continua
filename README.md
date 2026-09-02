@@ -20,18 +20,17 @@ Este repositório reúne os estudos, atividades práticas e pipelines de automa�
 - **Arquivo de Teste Relacionado**: [`estudos/test_soma.py`](estudos/test_soma.py) (teste unitário em Python executado pelo workflow no diretório `estudos/`).
 - **Linguagem demonstrativa**: Python 3.12 com Pytest.
 
-### 📘 [`Guia-Conceitos-CI-CD-Resumo-Prova.md`](estudos/Guia-Conceitos-CI-CD-Resumo-Prova.md) & [`02-estudo-conceitos-avancados.yml`](.github/workflows/02-estudo-conceitos-avancados.yml) - Conceitos Avançados de CI/CD
-- **Finalidade**: Guia completo de estudos para a prova unificando a sintaxe básica e explicando conceituação, quando utilizar, ordem de execução (paralelo vs sequencial) para:
-  - **Sintaxe Básica YAML** (Resumo prático do Workflow 01)
-  - **Code Coverage** (Cobertura de testes)
-  - **Análise de Código** (Linter)
-  - **DevSecOps & Gitleaks** (Varredura estática de segredos e credenciais expostas)
-  - **Security & Quality no GitHub** (Dependabot, CodeQL, Secret Scanning, Push Protection, SECURITY.md)
-  - **Secrets, Variables e Environments** (`${{ secrets.* }}`, `${{ vars.* }}`, aprovações de deploy, `.env` vs `env:`)
-  - **SonarCloud** (SAST, Quality Gate, Bugs, Vulnerabilidades, Code Smells e integração CI/CD)
-  - **Testes Unitários, Integração e E2E**
-  - **Estratégia de Matrix** com otimização em 2 SOs (`ubuntu-latest` e `windows-latest`) para *"não matar barata com canhão"*.
-- **Navegação Interativa**: Todos os documentos possuem links diretos e bidirecionais entre si para navegação rápida.
+### 📘 [`Guia-Conceitos-CI-CD-Resumo-Prova.md`](estudos/Guia-Conceitos-CI-CD-Resumo-Prova.md) & [`02-estudo-conceitos-avancados.yml`](.github/workflows/02-estudo-conceitos-avancados.yml) - Guia Mestre de Estudos (Aulas 01 a 05)
+- **Finalidade**: Guia definitivo e unificado de estudos para a prova integrando **100% dos slides e conceitos ministrados pelo professor nas Aulas 01 a 05**:
+  - **Introdução a CI/CD e Cultura DevOps**: Evolução histórica (Cascata vs Ágil vs DevOps), os 3 Pilares do DevOps, diferença entre CI, Continuous Delivery (aprov. humana) e Continuous Deployment (100% automatizado).
+  - **Gerenciamento de Configuração & Git Avançado**: Tabela de modos do `git reset` (`--soft`, `--mixed`, `--hard`), `git revert`, ciclo de trabalho, branches e Pull Requests.
+  - **Estrutura e Sintaxe do GitHub Actions**: Diferença conceitual entre `uses`, `with` e `run`, isolamento de runners e dependências entre jobs (`needs`).
+  - **Testes e Qualidade (*Shift Left*)**: Pirâmide de testes (Unitários, Integração, E2E), padrão AAA (*Arrange, Act, Assert*), Code Coverage e Quality Gates.
+  - **Matrix Strategy & Caching**: Multiplicação de ambientes, regra *"Não matar barata com canhão"*, caching de dependências com `cache: 'pip'` e `requirements.txt`.
+  - **Security & Quality no GitHub**: Dependabot, CodeQL, Secret Scanning, Push Protection, Private Vulnerability Reporting e `SECURITY.md`.
+  - **Secrets, Variables e Environments**: Actions Secrets (`${{ secrets.* }}`), Actions Variables (`${{ vars.* }}`), regras de proteção de deploy em Environments, `.env` local vs bloco `env:`.
+  - **SonarCloud**: Guia e passo a passo oficial atualizado de integração (passo a passo das Aulas 04/05) com `sonar-project.properties` e workflow no GitHub Actions.
+- **Navegação Interativa**: Links diretos entre o Guia e todos os workflows do repositório para estudar tudo em um só lugar.
 
 ---
 
