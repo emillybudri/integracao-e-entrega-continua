@@ -77,9 +77,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'                                # Armazena dependências no Cache para acelerar os testes
+          cache-dependency-path: '**/requirements.txt'
 
       - name: Instalar dependências
-        run: pip install pytest pytest-cov
+        run: pip install -r estudos/requirements.txt
 
       - name: Executar Testes Unitários e Cobertura de Código (Code Coverage)
         working-directory: estudos
