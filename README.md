@@ -26,6 +26,9 @@ Este repositório reúne os estudos, atividades práticas e pipelines de automa�
   - **Code Coverage** (Cobertura de testes)
   - **Análise de Código** (Linter)
   - **DevSecOps & Gitleaks** (Varredura estática de segredos e credenciais expostas)
+  - **Security & Quality no GitHub** (Dependabot, CodeQL, Secret Scanning, Push Protection, SECURITY.md)
+  - **Secrets, Variables e Environments** (`${{ secrets.* }}`, `${{ vars.* }}`, aprovações de deploy, `.env` vs `env:`)
+  - **SonarCloud** (SAST, Quality Gate, Bugs, Vulnerabilidades, Code Smells e integração CI/CD)
   - **Testes Unitários, Integração e E2E**
   - **Estratégia de Matrix** com otimização em 2 SOs (`ubuntu-latest` e `windows-latest`) para *"não matar barata com canhão"*.
 - **Navegação Interativa**: Todos os documentos possuem links diretos e bidirecionais entre si para navegação rápida.

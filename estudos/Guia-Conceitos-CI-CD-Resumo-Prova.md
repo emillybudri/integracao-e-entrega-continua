@@ -206,6 +206,153 @@ No workflow, indicamos a localização do arquivo com `cache-dependency-path` e 
 
 ---
 
+## 🛡️ 9. Aba "Security and Quality" e Recursos de Segurança do GitHub
+
+A aba **Security and Quality** (Segurança e Qualidade) do repositório no GitHub reúne ferramentas nativas e automáticas para proteger o código-fonte, dependências e credenciais.
+
+```text
+GitHub Repository ──► [ Security and quality ]
+                        ├── Dependabot (Malware & Vulnerabilidades de Bibliotecas)
+                        ├── Code Scanning (CodeQL - SAST Análise de Bugs no Código)
+                        ├── Secret Scanning (Detecção de Senhas e Tokens Expostos)
+                        ├── Private Vulnerability Reporting (Relatórios Privados)
+                        └── Security Policy & Advisories (Políticas e Avisos)
+```
+
+### 1️⃣ Dependabot (Vulnerabilidades de Dependências)
+- **Alerts**: Notifica automaticamente quando uma biblioteca declarada em arquivos de dependências (como `package.json`, `requirements.txt` ou `pom.xml`) possui uma vulnerabilidade de segurança conhecida (CVE).
+- **Security Updates**: Abre Pull Requests automáticos atualizando a biblioteca para a versão corrigida e segura.
+- **Malware & Vulnerabilities**: Varre o ecossistema de pacotes em busca de código malicioso injetado por hackers em bibliotecas públicas.
+
+### 2️⃣ Code Scanning (CodeQL / SAST)
+- **O que é?** Ferramenta de **SAST (Static Application Security Testing)** nativa do GitHub.
+- **Como funciona?** Analisa o código-fonte procurando por falhas graves de segurança (ex: SQL Injection, Cross-Site Scripting - XSS, vazamento de memória e erros de lógica).
+
+### 3️⃣ Secret Scanning & Push Protection
+- **Secret Scanning**: Rastria commits e historicos do Git em busca de credenciais expostas (como chaves da AWS, tokens do GitHub, chaves de API).
+- **Push Protection**: Recurso que bloqueia o `git push` **antes** que o commit seja aceito no repositório se detectar um segredo válido, impedindo o vazamento antes mesmo dele acontecer.
+
+### 4️⃣ Private Vulnerability Reporting & Security Policy
+- **Private Vulnerability Reporting**: Permite que pesquisadores externos de segurança relatem falhas diretamente e de forma privada aos mantenedores do projeto, sem criar Issues públicas que exporiam a falha.
+- **Security Policy (`SECURITY.md`)**: Arquivo de política no repositório que orienta a comunidade sobre como reportar vulnerabilidades de forma responsável.
+
+---
+
+## 🔑 10. Secrets, Variables, Environments e `.env` no GitHub
+
+### 🔒 1. Actions Secrets (`${{ secrets.NOME_DO_SEGREDO }}`)
+- **O que é?** Valores sensíveis e criptografados (senhas de banco, tokens de API, chaves SSH, `SONAR_TOKEN`).
+- **Onde fica no GitHub?** `Settings` ➔ `Secrets and variables` ➔ `Actions`.
+- **Segurança**: Os valores nunca são exibidos nos logs de execução do GitHub Actions. Se tentarem imprimir o segredo com `echo`, o GitHub substitui automaticamente por `***`.
+
+### 📌 2. Actions Variables (`${{ vars.NOME_DA_VARIAVEL }}`)
+- **O que é?** Valores de configuração **não sensíveis** reutilizáveis entre os workflows (ex: URLs de APIs públicas, porta do servidor, nome do ambiente).
+
+### 🌍 3. Environments (Ambientes: Staging, Production)
+- **O que é?** Representa os ambientes reais de destino do software (ex: `staging`, `production`).
+- **Recursos dos Environments**:
+  - **Secrets de Ambiente**: Permite ter um segredo chamado `DATABASE_URL` diferente para produção e para homologação.
+  - **Deployment Protection Rules**: Regras de proteção que exigem **aprovação manual** de um revisor ou aprovação de testes específicos antes de liberar o deploy em um ambiente crítico.
+
+### 📄 4. O Arquivo `.env` vs Bloco `env:` na Pipeline
+- **Arquivo `.env` Local**: Usado apenas na máquina do desenvolvedor para rodar a aplicação localmente. **NUNCA deve ser commitado no Git** (deve constar obrigatoriamente no `.gitignore`).
+- **Bloco `env:` no GitHub Actions**: É a sintaxe em YAML para disponibilizar segredos ou variáveis aos passos e scripts da pipeline:
+
+```yaml
+steps:
+  - name: Executar script com variáveis
+    env:
+      DATABASE_URL: ${{ secrets.PROD_DB_URL }} # Injeta o segredo como variável de ambiente
+      NODE_ENV: 'production'
+    run: npm start
+```
+
+---
+
+## ☁️ 11. SonarCloud: Análise de Qualidade e Segurança de Código
+
+### 🔍 O que é o SonarCloud?
+O **SonarCloud** é uma plataforma baseada em nuvem para **Análise Estática de Código (SAST)** e avaliação da **qualidade de software**. Ele analisa o código a cada commit/PR e gera relatórios detalhados com indicadores de saúde do projeto.
+
+### 📊 O que o SonarCloud analisa?
+1. **Bugs**: Erros no código que farão a aplicação quebrar em execução.
+2. **Vulnerabilidades**: Falhas de segurança que abrem brechas para ataques.
+3. **Security Hotspots**: Trechos de código sensíveis que exigem revisão manual de um humano.
+4. **Code Smells (Maus Cheiros)**: Código confuso, mal formatado ou difícil de manter (débito técnico).
+5. **Duplicações de Código**: Trechos de código copiados e colados em vários lugares.
+6. **Quality Gate (Portão de Qualidade)**: Conjunto de regras de aprovação. Se o código não atingir os critérios (ex: mínimo 80% de cobertura e 0 vulnerabilidades), o Quality Gate **reprova o Pull Request**.
+
+---
+
+### 🚀 Passo a Passo: Como Integrar o SonarCloud na Pipeline do GitHub Actions
+
+```text
+[ Desenvolvedor envia PR ] ──► [ GitHub Actions executa testes ]
+                                              │
+                                              ▼
+[ SonarCloud analisa o código ] ◄── [ SonarScanner envia código ]
+              │
+              ▼
+[ Avaliação do Quality Gate ] ──► (Aprovado ou Reprovado no GitHub)
+```
+
+#### Passo 1: Criar Conta e Importar o Repositório no SonarCloud
+1. Acesse [sonarcloud.io](https://sonarcloud.io) e faça login com sua conta do GitHub.
+2. Clique em **Import an organization** e selecione o repositório do GitHub.
+
+#### Passo 2: Gerar o Token de Acesso
+1. No SonarCloud, vá em **My Account ➔ Security**.
+2. Gere um novo token de acesso (ex: chamando de `github-actions-token`).
+
+#### Passo 3: Cadastrar o Segredo no GitHub
+1. No seu repositório no GitHub, vá em **Settings ➔ Secrets and variables ➔ Actions**.
+2. Clique em **New repository secret**.
+3. **Nome**: `SONAR_TOKEN`
+4. **Valor**: Cole o token gerado no SonarCloud.
+
+#### Passo 4: Criar o Arquivo `sonar-project.properties` na Raiz do Projeto
+Crie o arquivo `sonar-project.properties` no seu repositório especificando as chaves da sua organização e projeto:
+
+```properties
+sonar.organization=sua-organizacao-sonar
+sonar.projectKey=sua-organizacao_seu-repositorio
+sonar.sources=.
+sonar.exclusions=**/node_modules/**,**/tests/**
+sonar.tests=.
+sonar.test.inclusions=**/*.test.js,**/test_*.py
+sonar.python.version=3.12
+```
+
+#### Passo 5: Adicionar o Job do SonarCloud no Workflow do GitHub Actions (`.github/workflows/sonar.yml`)
+
+```yaml
+name: Analise de Qualidade - SonarCloud
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sonarcloud:
+    name: Analise do SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar Código do Repositório
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # O SonarCloud precisa de todo o histórico do Git para atribuir o autor das linhas
+
+      - name: Executar SonarCloud Scanner
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+```
+
+---
+
 ## 📝 Workflows Práticos no Repositório
 
 - **[Workflow 01 - Estrutura Padrão](../.github/workflows/01-estrutura-padrao.yml)**: Estudo da sintaxe fundamental YAML.
