@@ -1,0 +1,100 @@
+# ESTUDO DE CONCEITOS AVANÇADOS DE CI/CD & RESUMO PARA PROVA
+# 📖 Guia Teórico Completo: estudos/Guia-Conceitos-CI-CD-Resumo-Prova.md
+# 🔗 Workflow Básico 01: .github/workflows/01-estrutura-padrao.yml
+# Este arquivo exemplifica a ordem de execução, paralelo vs sequencial, DevSecOps (Gitleaks),
+# Linter, Testes Unitários, Cobertura de Código, Testes E2E e a Estratégia de Matrix.
+
+name: Estudo - Conceitos Avancados de CI/CD (Resumo Prova)
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  # =========================================================================
+  # 1. PARALELO (JOB 1): SEGURANÇA DEVSECOPS & GITLEAKS
+  # Conceito: Análise de segurança estática para evitar vazamento de chaves/segredos.
+  # Ordem: Roda no INÍCIO e em PARALELO com o Linter por ser super rápido e crítico.
+  # =========================================================================
+  analise-seguranca:
+    name: DevSecOps - Gitleaks Secret Scanning
+    runs-on: ubuntu-latest                             # Roda em ambiente Linux isolado
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0                              # Baixa todo o histórico de commits para varrer o Git
+
+      - name: Executar Gitleaks                        # Action oficial para varredura de senhas/tokens no repositório
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # =========================================================================
+  # 2. PARALELO (JOB 2): ANÁLISE DE CÓDIGO (LINTER)
+  # Conceito: Verifica sintaxe e padronização de código sem executá-lo.
+  # Execução: Em PARALELO com a segurança (não tem 'needs', então roda junto).
+  # =========================================================================
+  analise-linter:
+    name: Analise de Codigo (Linter)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Executar Linter
+        run: echo "Executando linter/flake8 para validar sintaxe do código..."
+
+  # =========================================================================
+  # 3. MATRIX + TESTES UNITÁRIOS + CODE COVERAGE
+  # Conceito de Matrix: Roda o mesmo job em múltiplos SOs e versões da linguagem.
+  # Otimização ("Não matar barata com canhão"): Usa 2 SOs (ubuntu / windows) em vez de matrizes gigantes.
+  # Ordem: SEQUENCIAL em relação aos jobs de segurança e linter (needs: [analise-seguranca, analise-linter]).
+  # =========================================================================
+  testes-unitarios-matrix:
+    name: Testes Unitarios & Cobertura (${{ matrix.os }} - Python ${{ matrix.python-version }})
+    needs: [analise-seguranca, analise-linter]       # Dependência sequencial: só roda se segurança e linter passarem
+    runs-on: ${{ matrix.os }}                          # Define dynamicamente o sistema operacional (Ubuntu / Windows)
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]            # 2 SOs principais para economizar minutos de execução
+        python-version: ['3.11', '3.12']               # Testando nas versões estáveis suportadas
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Instalar dependências
+        run: pip install pytest pytest-cov
+
+      - name: Executar Testes Unitários e Cobertura de Código (Code Coverage)
+        working-directory: estudos
+        run: pytest --cov=.                            # Executa pytest gerando o relatório de cobertura de código (coverage)
+
+  # =========================================================================
+  # 4. TESTES DE INTEGRAÇÃO / E2E (END-TO-END)
+  # Conceito: Testam a aplicação completa com componentes integrados ou navegadores.
+  # Ordem: SEQUENCIAL por ser um job mais pesado e demorado. Roda APÓS os testes unitários.
+  # =========================================================================
+  testes-e2e:
+    name: Testes de Integracao e E2E
+    needs: testes-unitarios-matrix                     # Depende do sucesso de toda a matriz de testes unitários
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Executar Testes E2E
+        run: echo "Executando testes End-to-End (E2E) integrados..."

@@ -15,10 +15,20 @@ Este repositório reúne os estudos, atividades práticas e pipelines de automa�
 
 ## 📚 Material de Estudo e Resumo para Prova
 
-### 📝 [`01-estrutura-padrao.yml`](.github/workflows/01-estrutura-padrao.yml) - Estrutura Padrão de Workflow
-- **Finalidade**: Anotação essencial e guia de estudos com explicações detalhadas linha a linha sobre a sintaxe YAML e a estrutura básica de um workflow do GitHub Actions (`name`, `on`, `jobs`, `runs-on`, `steps`, `uses`, `with`, `run`).
+### 📝 [`01-estrutura-padrao.yml`](.github/workflows/01-estrutura-padrao.yml) - Estrutura Padrão de Workflow (Sintaxe Básica)
+- **Finalidade**: Anotação essencial e guia de estudos linha a linha com a sintaxe fundamental do YAML (`name`, `on`, `jobs`, `runs-on`, `steps`, `uses`, `with`, `run`, `working-directory`).
 - **Arquivo de Teste Relacionado**: [`estudos/test_soma.py`](estudos/test_soma.py) (teste unitário em Python executado pelo workflow no diretório `estudos/`).
 - **Linguagem demonstrativa**: Python 3.12 com Pytest.
+
+### 📘 [`Guia-Conceitos-CI-CD-Resumo-Prova.md`](estudos/Guia-Conceitos-CI-CD-Resumo-Prova.md) & [`02-estudo-conceitos-avancados.yml`](.github/workflows/02-estudo-conceitos-avancados.yml) - Conceitos Avançados de CI/CD
+- **Finalidade**: Guia completo de estudos para a prova unificando a sintaxe básica e explicando conceituação, quando utilizar, ordem de execução (paralelo vs sequencial) para:
+  - **Sintaxe Básica YAML** (Resumo prático do Workflow 01)
+  - **Code Coverage** (Cobertura de testes)
+  - **Análise de Código** (Linter)
+  - **DevSecOps & Gitleaks** (Varredura estática de segredos e credenciais expostas)
+  - **Testes Unitários, Integração e E2E**
+  - **Estratégia de Matrix** com otimização em 2 SOs (`ubuntu-latest` e `windows-latest`) para *"não matar barata com canhão"*.
+- **Navegação Interativa**: Todos os documentos possuem links diretos e bidirecionais entre si para navegação rápida.
 
 ---
 
@@ -65,17 +75,30 @@ Este repositório reúne os estudos, atividades práticas e pipelines de automa�
 
 ---
 
+### 🔀 Atividade 05 (02/09/2026) - Pipeline CI com Estratégia de Matrix (Python)
+- **Código e Documentação**: Pasta [`ativ-05/`](ativ-05/)
+  - [`README.md`](ativ-05/README.md): Documentação sobre a estratégia de Matrix.
+  - [`test_matrix.py`](ativ-05/test_matrix.py): Testes unitários em Python com Pytest.
+- **Workflow de CI**: [`.github/workflows/ativ-05-pipeline-matrix-py.yml`](.github/workflows/ativ-05-pipeline-matrix-py.yml)
+  - **Nome no GitHub Actions**: `Atividade 05 - Pipeline Matrix com Python (02/09/2026)`
+  - **Tecnologia**: Python 3.11 e 3.12 (`pytest`).
+  - **Matriz de Execução**: 3 versões de Ubuntu (`ubuntu-latest`, `ubuntu-24.04`, `ubuntu-22.04`) x 2 versões de Python (`3.11`, `3.12`) = **6 execuções em paralelo**.
+
+---
+
 ## 🗂️ Estrutura do Repositório
 
 ```text
 integracao-e-entrega-continua/
 ├── .github/
 │   └── workflows/
-│       ├── 01-estrutura-padrao.yml                       # Estudo & Resumo para Prova
+│       ├── 01-estrutura-padrao.yml                       # Estudo & Resumo para Prova (Sintaxe Básica)
+│       ├── 02-estudo-conceitos-avancados.yml             # Estudo & Resumo para Prova (Conceitos CI/CD)
 │       ├── ativ-01-primeira-pipeline-py.yml              # Atividade 01 (19/08/2026)
 │       ├── ativ-02-pipeline-calculadora-js.yml           # Atividade 02 (19/08/2026)
 │       ├── ativ-03-pipeline-linguagem-favorita-js.yml    # Atividade 03 (26/08/2026)
-│       └── ativ-04-pipeline-qualidade-seguranca-js.yml   # Atividade 04 (26/08/2026)
+│       ├── ativ-04-pipeline-qualidade-seguranca-js.yml   # Atividade 04 (26/08/2026)
+│       └── ativ-05-pipeline-matrix-py.yml                # Atividade 05 (02/09/2026)
 ├── ativ-01/
 │   ├── Guia-de-Versionamento-e-Colaboracao.md
 │   └── test_exemplo.py                                   # Teste em Python da Atividade 01
@@ -98,7 +121,11 @@ integracao-e-entrega-continua/
 │   │   └── app.js                                        # Aplicação em JS
 │   └── tests/
 │       └── app.test.js                                   # Testes unitários Jest
+├── ativ-05/
+│   ├── README.md                                         # Guia da Atividade 05 (Matrix Strategy)
+│   └── test_matrix.py                                    # Testes unitários Python para a matriz
 ├── estudos/
+│   ├── Guia-Conceitos-CI-CD-Resumo-Prova.md              # Resumo didático em MD dos conceitos de CI/CD
 │   └── test_soma.py                                     # Teste em Python do Estudo 01
 └── README.md
 ```

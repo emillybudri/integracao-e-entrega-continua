@@ -1,4 +1,6 @@
 # O QUE É YAML? Formato de texto legível por humanos estruturado por indentação (use sempre espaços, nunca TAB).
+# 📖 Guia Teórico Completo de Estudos: estudos/Guia-Conceitos-CI-CD-Resumo-Prova.md
+# 🔗 Workflow Prático 02: .github/workflows/02-estudo-conceitos-avancados.yml
 
 name: Estudo - Estrutura Padrão do Workflow (Resumo Prova) # Nome visível do workflow na aba 'Actions' do GitHub
 on:                                                       # Define os eventos/gatilhos que iniciam esta automação
