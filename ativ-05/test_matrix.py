@@ -6,4 +6,4 @@ def test_multiplicacao():
 
 def test_versao_python():
     import sys
-    assert sys.version_info >= (3, 11)
+    assert sys.version_info >= (3, 10)

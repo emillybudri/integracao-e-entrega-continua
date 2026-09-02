@@ -17,8 +17,12 @@ env:
 
 jobs:
   teste:
-    name: Testes Python
-    runs-on: ubuntu-latest
+    name: Testes Python (${{ matrix.os }} - Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04, ubuntu-22.04]
+        python-version: ['3.11', '3.12']
     
     steps:
     - name: Baixar Código do Repositório
@@ -27,7 +31,7 @@ jobs:
     - name: Configurar Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: ${{ matrix.python-version }}
 
     - name: Instalar dependências
       run: pip install pytest
