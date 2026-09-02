@@ -167,8 +167,47 @@ Nas actions oficiais como `actions/setup-python` ou `actions/setup-node`, basta 
 
 ---
 
+## 📦 8. Gerenciamento de Dependências com `requirements.txt`
+
+### 📄 O que é o `requirements.txt`?
+O `requirements.txt` é um arquivo de texto simples usado no ecossistema Python que lista todas as bibliotecas e pacotes externos (com suas respectivas versões) que a sua aplicação necessita para ser executada.
+
+### 🎯 Por que ele é fundamental em CI/CD?
+1. **Reprodutibilidade do Ambiente**: Garante que o projeto rode **exatamente com as mesmas versões de bibliotecas** em qualquer computador ou máquina virtual do GitHub Actions.
+2. **Integração com o Cache no GitHub Actions**:
+   - O `actions/setup-python@v5` calcula um **hash** (identificador único) do conteúdo do `requirements.txt`.
+   - Se o arquivo não mudou entre as execuções, o GitHub Actions restaura os pacotes direto do Cache em segundos.
+   - Se você adicionar um novo pacote no `requirements.txt`, o hash muda automaticamente, fazendo o CI/CD baixar a nova dependência e atualizar o Cache.
+
+### 💻 Como Usar Localmente
+- **Instalar dependências registradas no arquivo**:
+  ```bash
+  pip install -r requirements.txt
+  ```
+- **Gerar ou atualizar o arquivo com os pacotes atuais do ambiente**:
+  ```bash
+  pip freeze > requirements.txt
+  ```
+
+### ⚙️ Como Usar no Workflow do GitHub Actions
+No workflow, indicamos a localização do arquivo com `cache-dependency-path` e realizamos a instalação via `-r`:
+
+```yaml
+- name: Configurar Python
+  uses: actions/setup-python@v5
+  with:
+    python-version: ${{ matrix.python-version }}
+    cache: 'pip'
+    cache-dependency-path: '**/requirements.txt' # Localiza automaticamente o arquivo de requisitos
+
+- name: Instalar dependências
+  run: pip install -r ativ-05/requirements.txt # Instala via arquivo de requisitos
+```
+
+---
+
 ## 📝 Workflows Práticos no Repositório
 
 - **[Workflow 01 - Estrutura Padrão](../.github/workflows/01-estrutura-padrao.yml)**: Estudo da sintaxe fundamental YAML.
 - **[Workflow 02 - Conceitos Avançados](../.github/workflows/02-estudo-conceitos-avancados.yml)**: Aplicação prática de Paralelo, Sequencial, DevSecOps, Matrix e E2E.
-- **[Workflow Atividade 05](../.github/workflows/ativ-05-pipeline-matrix-py.yml)**: Pipeline em Matrix com 6 combinações utilizando `cache: 'pip'`.
+- **[Workflow Atividade 05](../.github/workflows/ativ-05-pipeline-matrix-py.yml)**: Pipeline em Matrix com 6 combinações utilizando `cache: 'pip'` e `requirements.txt`.
