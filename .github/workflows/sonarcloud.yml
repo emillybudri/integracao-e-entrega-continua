@@ -1,0 +1,37 @@
+name: Analise de Qualidade - SonarQube Cloud
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+jobs:
+  sonarcloud:
+    name: Análise com SonarQube Cloud
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necessário para o SonarQube atrelar autoria dos commits
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: '**/requirements.txt'
+
+      - name: Instalar dependências
+        run: |
+          pip install -r requirements.txt
+
+      - name: Executar testes com cobertura XML
+        run: |
+          pytest --cov=. --cov-report=xml || true
+
+      - name: Análise com SonarQube
+        uses: SonarSource/sonarqube-scan-action@v7
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
