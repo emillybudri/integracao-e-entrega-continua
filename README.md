@@ -92,11 +92,12 @@ Este repositório reúne os estudos, atividades práticas e pipelines de automa�
 - **Código e Documentação**: Pasta [`ativ-06/`](ativ-06/)
   - [`index.html`](ativ-06/index.html): Clone idêntico ao site pudim.com.br com imagem de Dockerfile.
   - [`Dockerfile`](ativ-06/Dockerfile): Servidor web NGINX Alpine para containerização da página.
-  - [`README.md`](ativ-06/README.md): Guia de execução local, login (`docker login`), taggeamento (`docker tag`) e envio para o Container Registry (`docker push`).
+  - [`docker-compose.yml`](ativ-06/docker-compose.yml): Orquestração Docker Compose utilizando a imagem publicada no Docker Hub (`emillybudri/pudim-dockerfile:v1`).
+  - [`README.md`](ativ-06/README.md): Guia de execução local via `docker compose`, login (`docker login`), taggeamento (`docker tag`) e envio para o Container Registry (`docker push`).
 - **Workflow de CI**: [`.github/workflows/ativ-06-pipeline-docker-pudim.yml`](.github/workflows/ativ-06-pipeline-docker-pudim.yml)
   - **Nome no GitHub Actions**: `Atividade 06 - Pipeline Dockerfile Pudim (30/09/2026)`
-  - **Tecnologia**: Docker, NGINX Alpine, HTML5/CSS3.
-  - **Estrutura**: Validação de arquivos, build, taggeamento e simulação do fluxo de envio para o Container Registry.
+  - **Tecnologia**: Docker, Docker Compose, NGINX Alpine, HTML5/CSS3.
+  - **Estrutura**: Validação de arquivos, build, push e job de verificação via `docker pull` e `docker compose up` para validar a imagem do Docker Hub.
 
 ---
 
@@ -141,6 +142,7 @@ integracao-e-entrega-continua/
 │   └── test_matrix.py                                    # Testes unitários Python para a matriz
 ├── ativ-06/
 │   ├── Dockerfile                                        # Containerização da página estática (NGINX)
+│   ├── docker-compose.yml                                # Orquestração com imagem do Docker Hub
 │   ├── .dockerignore                                     # Exclusões para build do container
 │   ├── dockerfile.png                                    # Imagem da sintaxe Dockerfile
 │   ├── index.html                                        # HTML clone pudim.com.br

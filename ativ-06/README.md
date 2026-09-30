@@ -25,6 +25,7 @@ Esta atividade consiste na criação de um site exatamente no mesmo formato e la
 ```text
 ativ-06/
 ├── Dockerfile           # Configuração de build e publicação via NGINX Alpine
+├── docker-compose.yml   # Orquestração para executar a imagem do Docker Hub
 ├── .dockerignore        # Arquivos ignorados na imagem Docker
 ├── dockerfile.png       # Imagem da sintaxe Dockerfile em destaque
 ├── index.html           # Página HTML clone idêntica ao pudim.com.br
@@ -35,7 +36,36 @@ ativ-06/
 
 ## 🐳 Como Executar com Docker Localmente
 
-Para compilar a imagem e rodar o container na sua máquina local:
+### Opção 1: Usando Docker Compose com a Imagem do Docker Hub (Recomendado)
+
+Em vez de compilar o projeto localmente, utilize a imagem publicada no Docker Hub (`emillybudri/pudim-dockerfile:v1`) configurada no `docker-compose.yml`:
+
+```yaml
+services:
+  app:
+    image: emillybudri/pudim-dockerfile:v1
+    container_name: site-pudim-app
+    ports:
+      - "8080:80"
+    restart: always
+```
+
+Execute o comando:
+```bash
+docker compose up -d
+```
+
+Acesse no navegador:
+`http://localhost:8080`
+
+Para parar o container:
+```bash
+docker compose down
+```
+
+---
+
+### Opção 2: Compilar a Imagem Localmente
 
 ```bash
 # 1. Construir a imagem Docker
@@ -77,5 +107,7 @@ Assim como o código-fonte vai para o GitHub, a imagem compilada vai para um **C
 ## 🗂️ Arquivos Relacionados
 
 - **Workflow de CI**: [`.github/workflows/ativ-06-pipeline-docker-pudim.yml`](../.github/workflows/ativ-06-pipeline-docker-pudim.yml)
+- **Docker Compose**: [`docker-compose.yml`](docker-compose.yml)
 - **Código HTML**: [`index.html`](index.html)
 - **Dockerfile**: [`Dockerfile`](Dockerfile)
+

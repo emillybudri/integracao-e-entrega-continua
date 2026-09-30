@@ -24,6 +24,7 @@ jobs:
         run: |
           test -f ativ-06/index.html || (echo "Erro: index.html nao encontrado" && exit 1)
           test -f ativ-06/Dockerfile || (echo "Erro: Dockerfile nao encontrado" && exit 1)
+          test -f ativ-06/docker-compose.yml || (echo "Erro: docker-compose.yml nao encontrado" && exit 1)
           test -f ativ-06/dockerfile.png || (echo "Erro: dockerfile.png nao encontrado" && exit 1)
           echo "Todos os arquivos necessarios estao presentes."
 
@@ -59,12 +60,44 @@ jobs:
         env:
           CAN_PUSH: ${{ (secrets.DOCKER_PASS != '' || secrets.DOCKERHUB_TOKEN != '') && 'true' || 'false' }}
 
-  deploy:
-    name: Deploy / Confirmacao
+  teste-pull-e-execucao:
+    name: Pull e Verificacao da Imagem Docker
     needs: [validacao-arquivos, build]
     runs-on: ubuntu-latest
     steps:
-      - name: Confirmacao de Build
+      - name: Checkout codigo
+        uses: actions/checkout@v4
+
+      - name: Realizar Docker Pull da Imagem Publicada
+        run: |
+          echo "Efetuando pull da imagem emillybudri/pudim-dockerfile:v1..."
+          docker pull emillybudri/pudim-dockerfile:v1
+
+      - name: Executar Container via Docker Compose
+        run: |
+          echo "Subindo container a partir da imagem do Docker Hub usando docker-compose.yml..."
+          docker compose -f ativ-06/docker-compose.yml up -d
+          docker ps
+
+      - name: Verificar se o servico responde HTTP 200 OK
+        run: |
+          echo "Verificando se a aplicacao esta rodando na porta 8080..."
+          sleep 2
+          curl -f http://localhost:8080 || (echo "Erro ao acessar a aplicacao rodando via Docker" && exit 1)
+          echo "Conexao bem sucedida! A imagem Docker Hub emillybudri/pudim-dockerfile:v1 esta funcionando perfeitamente."
+
+      - name: Finalizar e Parar Containers
+        if: always()
+        run: |
+          docker compose -f ativ-06/docker-compose.yml down
+
+  deploy:
+    name: Deploy / Confirmacao
+    needs: [validacao-arquivos, build, teste-pull-e-execucao]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirmacao de Build e Deploy
         run: |
           echo "Pipeline da Atividade 06 executada com sucesso!"
-          echo "Imagem Docker do site Pudim Dockerfile compilada via docker/build-push-action (emillybudri/pudim-dockerfile:v1)."
+          echo "Imagem Docker Hub emillybudri/pudim-dockerfile:v1 validada via docker pull e docker compose."
+
