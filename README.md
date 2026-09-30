@@ -88,6 +88,18 @@ Este repositório reúne os estudos, atividades práticas e pipelines de automa�
 
 ---
 
+### 🍮 Atividade 06 (30/09/2026) - Site Clone Pudim (Dockerfile Edition) & Containerização
+- **Código e Documentação**: Pasta [`ativ-06/`](ativ-06/)
+  - [`index.html`](ativ-06/index.html): Clone idêntico ao site pudim.com.br com imagem de Dockerfile.
+  - [`Dockerfile`](ativ-06/Dockerfile): Servidor web NGINX Alpine para containerização da página.
+  - [`README.md`](ativ-06/README.md): Guia de execução local, login (`docker login`), taggeamento (`docker tag`) e envio para o Container Registry (`docker push`).
+- **Workflow de CI**: [`.github/workflows/ativ-06-pipeline-docker-pudim.yml`](.github/workflows/ativ-06-pipeline-docker-pudim.yml)
+  - **Nome no GitHub Actions**: `Atividade 06 - Pipeline Dockerfile Pudim (30/09/2026)`
+  - **Tecnologia**: Docker, NGINX Alpine, HTML5/CSS3.
+  - **Estrutura**: Validação de arquivos, build, taggeamento e simulação do fluxo de envio para o Container Registry.
+
+---
+
 ## 🗂️ Estrutura do Repositório
 
 ```text
@@ -100,7 +112,8 @@ integracao-e-entrega-continua/
 │       ├── ativ-02-pipeline-calculadora-js.yml           # Atividade 02 (19/08/2026)
 │       ├── ativ-03-pipeline-linguagem-favorita-js.yml    # Atividade 03 (26/08/2026)
 │       ├── ativ-04-pipeline-qualidade-seguranca-js.yml   # Atividade 04 (26/08/2026)
-│       └── ativ-05-pipeline-matrix-py.yml                # Atividade 05 (02/09/2026)
+│       ├── ativ-05-pipeline-matrix-py.yml                # Atividade 05 (02/09/2026)
+│       └── ativ-06-pipeline-docker-pudim.yml             # Atividade 06 (30/09/2026)
 ├── ativ-01/
 │   ├── Guia-de-Versionamento-e-Colaboracao.md
 │   └── test_exemplo.py                                   # Teste em Python da Atividade 01
@@ -126,6 +139,12 @@ integracao-e-entrega-continua/
 ├── ativ-05/
 │   ├── README.md                                         # Guia da Atividade 05 (Matrix Strategy)
 │   └── test_matrix.py                                    # Testes unitários Python para a matriz
+├── ativ-06/
+│   ├── Dockerfile                                        # Containerização da página estática (NGINX)
+│   ├── .dockerignore                                     # Exclusões para build do container
+│   ├── dockerfile.png                                    # Imagem da sintaxe Dockerfile
+│   ├── index.html                                        # HTML clone pudim.com.br
+│   └── README.md                                         # Documentação da Atividade 06
 ├── estudos/
 │   ├── Guia-Conceitos-CI-CD-Resumo-Prova.md              # Resumo didático em MD dos conceitos de CI/CD
 │   └── test_soma.py                                     # Teste em Python do Estudo 01
