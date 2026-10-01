@@ -94,6 +94,7 @@ Este repositório reúne os estudos, atividades práticas e pipelines de automa�
   - [`Dockerfile`](ativ-06/Dockerfile): Servidor web NGINX Alpine para containerização da página.
   - [`docker-compose.yml`](ativ-06/docker-compose.yml): Orquestração Docker Compose utilizando a imagem publicada no Docker Hub (`emillybudri/pudim-dockerfile:v1`).
   - [`README.md`](ativ-06/README.md): Guia de execução local via `docker compose`, login (`docker login`), taggeamento (`docker tag`) e envio para o Container Registry (`docker push`).
+- **Deploy em Produção**: [Pudim Dockerfile no Render](https://pudim-dockerfile-v1.onrender.com/)
 - **Workflow de CI**: [`.github/workflows/ativ-06-pipeline-docker-pudim.yml`](.github/workflows/ativ-06-pipeline-docker-pudim.yml)
   - **Nome no GitHub Actions**: `Atividade 06 - Pipeline Dockerfile Pudim (30/09/2026)`
   - **Tecnologia**: Docker, Docker Compose, NGINX Alpine, HTML5/CSS3.

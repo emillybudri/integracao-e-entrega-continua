@@ -104,10 +104,20 @@ Assim como o código-fonte vai para o GitHub, a imagem compilada vai para um **C
 
 ---
 
+## 🌐 Deploy em Produção (Render Container)
+
+A imagem Docker publicada no Docker Hub foi implantada com sucesso no **Render**:
+
+- **URL da Aplicação no Ar**: [https://pudim-dockerfile-v1.onrender.com/](https://pudim-dockerfile-v1.onrender.com/)
+- **Imagem Base no Docker Hub**: `emillybudri/pudim-dockerfile:v1`
+
+---
+
 ## 🗂️ Arquivos Relacionados
 
 - **Workflow de CI**: [`.github/workflows/ativ-06-pipeline-docker-pudim.yml`](../.github/workflows/ativ-06-pipeline-docker-pudim.yml)
 - **Docker Compose**: [`docker-compose.yml`](docker-compose.yml)
 - **Código HTML**: [`index.html`](index.html)
 - **Dockerfile**: [`Dockerfile`](Dockerfile)
+
 
