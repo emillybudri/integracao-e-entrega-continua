@@ -107,7 +107,7 @@ ativ-07/
 ```
 
 > [!TIP]
-> **Acesso em 3 passos:** `docker compose up -d --build` na pasta `ativ-07/`, abra `http://localhost:8081` e clique em **Entrar**. A tela de login mostra o usuário e a senha (`admin` / `admin123`). Detalhes e deploy no Render em [`ativ-07/README.md`](ativ-07/README.md).
+> **Acesso em 3 passos:** `docker compose up -d --build` na pasta `ativ-07/`, abra `http://localhost:8081` e clique em **Entrar**. A tela de login mostra o usuário e a senha (`admin` / `admin123`). No Render, basta publicar a pasta `ativ-07` com Docker: sem banco externo ela entra em modo demonstração (SQLite) e abre pronta, sem preencher nada. Detalhes em [`ativ-07/README.md`](ativ-07/README.md).
 
 ---
 
