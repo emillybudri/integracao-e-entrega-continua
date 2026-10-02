@@ -5,16 +5,25 @@ WP_PATH=/var/www/html
 log() { echo "[portal] $*"; }
 wpcli() { runuser -u www-data -- wp --path="$WP_PATH" "$@"; }
 
-# 1. Espera o wp-config.php (criado pelo entrypoint oficial) e a conexão com o banco.
+# 1. Espera o wp-config.php (criado pelo entrypoint oficial) e o banco ficar disponível.
+#    No modo demonstração (SQLite) não há servidor: basta o drop-in db.php existir.
+banco_pronto() {
+    if [ "${PORTAL_DB_MODE:-}" = "sqlite" ]; then
+        [ -f "$WP_PATH/wp-content/db.php" ]
+        return
+    fi
+    php -r '
+        $host = getenv("WORDPRESS_DB_HOST"); $port = 3306;
+        if (false !== strpos($host, ":")) { list($host, $port) = explode(":", $host, 2); }
+        $ssl = false !== strpos((string) getenv("WORDPRESS_CONFIG_EXTRA"), "MYSQLI_CLIENT_SSL");
+        $c = mysqli_init();
+        $ok = @mysqli_real_connect($c, $host, getenv("WORDPRESS_DB_USER"), getenv("WORDPRESS_DB_PASSWORD"), getenv("WORDPRESS_DB_NAME"), (int) $port, null, $ssl ? MYSQLI_CLIENT_SSL : 0);
+        exit($ok ? 0 : 1);
+    '
+}
+
 tentativas=0
-until [ -f "$WP_PATH/wp-config.php" ] && php -r '
-    $host = getenv("WORDPRESS_DB_HOST"); $port = 3306;
-    if (false !== strpos($host, ":")) { list($host, $port) = explode(":", $host, 2); }
-    $ssl = false !== strpos((string) getenv("WORDPRESS_CONFIG_EXTRA"), "MYSQLI_CLIENT_SSL");
-    $c = mysqli_init();
-    $ok = @mysqli_real_connect($c, $host, getenv("WORDPRESS_DB_USER"), getenv("WORDPRESS_DB_PASSWORD"), getenv("WORDPRESS_DB_NAME"), (int) $port, null, $ssl ? MYSQLI_CLIENT_SSL : 0);
-    exit($ok ? 0 : 1);
-' >/dev/null 2>&1; do
+until [ -f "$WP_PATH/wp-config.php" ] && banco_pronto >/dev/null 2>&1; do
     tentativas=$((tentativas + 1))
     if [ "$tentativas" -gt 90 ]; then
         log "Banco de dados indisponível após 3 minutos. Instalação automática cancelada."
@@ -53,6 +62,9 @@ wpcli core install \
 wpcli language core install pt_BR --activate >/dev/null 2>&1 || log "Aviso: não foi possível ativar o idioma pt_BR."
 wpcli option update timezone_string America/Sao_Paulo >/dev/null
 wpcli theme activate portal-cicd || log "Aviso: tema portal-cicd não encontrado."
+if [ "${PORTAL_DB_MODE:-}" = "sqlite" ]; then
+    wpcli plugin activate sqlite-database-integration >/dev/null 2>&1 || log "Aviso: não foi possível ativar o plugin SQLite."
+fi
 
 # Remove o conteúdo de exemplo do WordPress (post "Olá, mundo!" e página de exemplo).
 wpcli post delete 1 2 --force >/dev/null 2>&1 || true

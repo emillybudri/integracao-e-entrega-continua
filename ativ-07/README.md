@@ -27,7 +27,7 @@ docker compose up -d --build
 
 | Serviço | Imagem | Função | Acesso |
 | :--- | :--- | :--- | :--- |
-| `web` | build local sobre `wordpress:7.1.2-php8.3-apache` | WordPress com tema, WP-CLI e instalação automática | `http://localhost:8081` |
+| `web` | build local sobre `wordpress:7.1.2-php8.3-apache` | WordPress com tema, WP-CLI e instalação automática (MariaDB ou SQLite) | `http://localhost:8081` |
 | `database` | `mariadb:10.11.19` | Banco de dados relacional | Porta 3306, só dentro da rede |
 
 Os dois ficam na rede `bridge` dedicada. O `web` só inicia depois que o banco passa no healthcheck (`depends_on` com `service_healthy`). Os dados vivem nos volumes `db_data` e `wordpress_data`.
@@ -36,7 +36,7 @@ Os dois ficam na rede `bridge` dedicada. O `web` só inicia depois que o banco p
 
 1. O [`Dockerfile`](Dockerfile) parte da imagem oficial do WordPress e acrescenta o WP-CLI, o tema, os `mu-plugins` e o conteúdo inicial.
 2. O [`entrypoint.sh`](docker/entrypoint.sh) inicia o provisionamento em segundo plano e deixa o entrypoint oficial seguir normalmente.
-3. O [`provision.sh`](docker/provision.sh) espera o banco responder, e **só se o site ainda não estiver instalado** executa `wp core install`, ativa o idioma pt_BR e o tema, remove o conteúdo de exemplo e cria as publicações de [`seed/seed.php`](seed/seed.php).
+3. O [`provision.sh`](docker/provision.sh) espera o banco responder (ou, sem banco externo, usa SQLite), e **só se o site ainda não estiver instalado** executa `wp core install`, ativa o idioma pt_BR e o tema, remove o conteúdo de exemplo e cria as publicações de [`seed/seed.php`](seed/seed.php).
 4. Em um volume que já tem o site instalado, nada é alterado.
 
 ---
@@ -70,23 +70,30 @@ docker compose down -v            # para e APAGA os volumes (reinstala do zero n
 
 ## ☁️ Publicar no Render
 
-O Render executa **um container por serviço** e não lê `docker-compose.yml`, então o banco precisa ser externo ao serviço web.
+Não precisa preencher nada. Crie um **Web Service** a partir deste repositório, com **Root Directory** `ativ-07` e ambiente **Docker**, e publique. Sem nenhuma variável de ambiente, a imagem entra em **modo demonstração**: usa SQLite dentro do próprio container (sem servidor de banco), instala o WordPress sozinha e abre já com o tema, as publicações e o login `admin` / `admin123`, mostrado na tela de login.
 
-1. Crie um banco **MariaDB ou MySQL** em um provedor externo e anote host, porta, nome, usuário e senha.
-2. No Render, crie um **Web Service** a partir deste repositório, com **Root Directory** `ativ-07` e ambiente **Docker**.
-3. Defina as variáveis do serviço:
-
-   | Variável | Valor |
-   | :--- | :--- |
-   | `WORDPRESS_DB_HOST` | `host:porta` do banco |
-   | `WORDPRESS_DB_NAME`, `WORDPRESS_DB_USER`, `WORDPRESS_DB_PASSWORD` | credenciais do banco |
-   | `PORTAL_ADMIN_USER`, `PORTAL_ADMIN_PASSWORD` | **defina uma senha forte**; não use `PORTAL_LOGIN_HINT` em produção |
-   | `WORDPRESS_CONFIG_EXTRA` | `define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);` (somente se o banco exigir SSL) |
-
-4. No primeiro deploy, o site se instala sozinho usando o endereço do próprio Render (`RENDER_EXTERNAL_URL`), e já abre com o tema e as publicações.
+| | Modo demonstração (padrão no Render) | Modo MariaDB (`docker compose`) |
+| :--- | :--- | :--- |
+| Banco | SQLite no container | MariaDB 10.11.19 em outro container |
+| Configuração | nenhuma | automática via Compose |
+| Dados | duram enquanto o container existe | persistem nos volumes |
 
 > [!WARNING]
-> No plano gratuito do Render o serviço **hiberna** após alguns minutos sem acesso, e a primeira visita seguinte pode levar cerca de um minuto para responder. Isso é do plano, não do site.
+> No plano gratuito do Render o disco é temporário: ao hibernar, reiniciar ou fazer novo deploy, o site volta ao estado inicial (as 4 publicações originais) e o que foi criado pelo botão **+** se perde. A primeira visita depois da hibernação também pode levar cerca de um minuto.
+
+> [!CAUTION]
+> Como o login aparece na tela, qualquer visitante consegue entrar e editar o site de demonstração. Para impedir isso, defina `PORTAL_ADMIN_PASSWORD` com uma senha forte e `PORTAL_LOGIN_HINT=0` nas variáveis do serviço.
+
+### Usar um MariaDB ou MySQL externo (opcional)
+
+Se informar `WORDPRESS_DB_HOST`, a imagem deixa o modo demonstração e usa o banco indicado, com dados permanentes:
+
+| Variável | Valor |
+| :--- | :--- |
+| `WORDPRESS_DB_HOST` | `host:porta` do banco |
+| `WORDPRESS_DB_NAME`, `WORDPRESS_DB_USER`, `WORDPRESS_DB_PASSWORD` | credenciais do banco |
+| `PORTAL_ADMIN_USER`, `PORTAL_ADMIN_PASSWORD` | acesso do administrador (use uma senha forte) |
+| `WORDPRESS_CONFIG_EXTRA` | `define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);` (somente se o banco exigir SSL) |
 
 ---
 
@@ -137,9 +144,9 @@ ativ-07/
 
 ## 🛡️ Destaques
 
-- **Primeiro acesso sem atrito:** instalação, idioma, tema e conteúdo prontos, sem passar pelo assistente.
+- **Primeiro acesso sem atrito:** instalação, idioma, tema e conteúdo prontos, sem passar pelo assistente. Sem banco externo, funciona até no Render sem preencher nada.
 - **Idempotente:** reiniciar ou refazer o `up` não reinstala nem duplica nada.
 - **Funciona em qualquer endereço:** `localhost`, `127.0.0.1` ou o domínio do Render, sem reconfigurar a URL.
 - **Healthcheck e dependência:** o WordPress só inicia com o banco saudável.
 - **Persistência:** postagens, configurações e mídias sobrevivem a reinicializações.
-- **Pipeline:** o [workflow](../.github/workflows/ativ-07-pipeline-docker-wordpress.yml) valida o Compose, constrói a imagem, espera a instalação automática e confere o site, as publicações e a tela de login.
+- **Pipeline:** o [workflow](../.github/workflows/ativ-07-pipeline-docker-wordpress.yml) valida o Compose, constrói a imagem, espera a instalação automática e confere o site, as publicações e a tela de login, tanto com MariaDB quanto no modo demonstração.
