@@ -36,7 +36,7 @@ jobs:
       - name: Subir containers WordPress e MariaDB
         run: |
           cd ativ-07
-          docker compose up -d
+          docker compose up -d --build
 
       - name: Aguardar inicialização do Banco e do WordPress
         run: |
@@ -44,22 +44,35 @@ jobs:
           timeout 60s bash -c 'until [ "$(docker inspect --format="{{.State.Health.Status}}" mariadb_wordpress)" == "healthy" ]; do sleep 2; done'
           echo "MariaDB está saudável e pronto para conexões!"
 
-          echo "Aguardando o WordPress inicializar o Apache e os arquivos..."
-          timeout 60s bash -c 'until STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8081 || echo "000"); [ "$STATUS" -eq 200 ] || [ "$STATUS" -eq 302 ]; do sleep 3; done'
-          echo "WordPress pronto e respondendo requisições HTTP!"
+          echo "Aguardando a instalação automática do WordPress (até 3 minutos)..."
+          if ! timeout 180s bash -c 'until curl -s http://localhost:8081/ | grep -q "site-header"; do sleep 3; done'; then
+            echo "❌ O site não ficou pronto a tempo"
+            docker logs wordpress_web
+            exit 1
+          fi
+          echo "WordPress instalado e com o tema ativo!"
 
       - name: Validar resposta da aplicação Web WordPress
         run: |
           echo "Testando requisição HTTP no WordPress..."
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8081 || echo "000")
           echo "Código HTTP recebido: $HTTP_STATUS"
-          if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 302 ]; then
+          if [ "$HTTP_STATUS" -eq 200 ]; then
             echo "✅ WordPress respondendo com sucesso!"
           else
             echo "❌ Erro ao acessar o WordPress"
             docker logs wordpress_web
             exit 1
           fi
+
+      - name: Validar publicações iniciais e tela de login
+        run: |
+          POSTS=$(curl -s http://localhost:8081/ | grep -c 'class="post-thumb"' || true)
+          echo "Publicações com imagem na página inicial: $POSTS"
+          [ "$POSTS" -ge 4 ] || { echo "❌ Publicações iniciais não foram criadas"; docker logs wordpress_web; exit 1; }
+          LOGIN=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8081/wp-login.php)
+          echo "wp-login.php: HTTP $LOGIN"
+          [ "$LOGIN" -eq 200 ] || exit 1
 
       - name: Exibir status final dos containers
         run: |
