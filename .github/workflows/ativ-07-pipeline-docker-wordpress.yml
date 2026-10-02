@@ -1,0 +1,70 @@
+name: Atividade 07 - Pipeline WordPress e MariaDB (02/10/2026)
+
+on:
+  push:
+    branches: [ main, dev, "feat/*" ]
+    paths:
+      - 'ativ-07/**'
+      - '.github/workflows/ativ-07-pipeline-docker-wordpress.yml'
+  pull_request:
+    branches: [ main, dev ]
+    paths:
+      - 'ativ-07/**'
+      - '.github/workflows/ativ-07-pipeline-docker-wordpress.yml'
+
+jobs:
+  validar-configuracao:
+    name: 1. Validação de Sintaxe Docker Compose
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Validar sintaxe do docker-compose.yml
+        run: |
+          cd ativ-07
+          docker compose config
+
+  testar-ambiente-wordpress:
+    name: 2. Teste e Subida do Ambiente Multi-Container
+    needs: validar-configuracao
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Subir containers WordPress e MariaDB
+        run: |
+          cd ativ-07
+          docker compose up -d
+
+      - name: Aguardar inicialização e Healthcheck do Banco
+        run: |
+          echo "Aguardando o MariaDB estar pronto (healthy)..."
+          cd ativ-07
+          timeout 60s bash -c 'until [ "$(docker inspect --format="{{.State.Health.Status}}" mariadb_wordpress)" == "healthy" ]; do sleep 2; done'
+          echo "MariaDB está saudável e pronto para conexões!"
+
+      - name: Validar resposta da aplicação Web WordPress
+        run: |
+          echo "Testando requisição HTTP no WordPress..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8081 || echo "000")
+          echo "Código HTTP recebido: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 302 ]; then
+            echo "✅ WordPress respondendo com sucesso!"
+          else
+            echo "❌ Erro ao acessar o WordPress"
+            docker logs wordpress_web
+            exit 1
+          fi
+
+      - name: Exibir status final dos containers
+        run: |
+          cd ativ-07
+          docker compose ps
+
+      - name: Finalizar e limpar ambiente
+        if: always()
+        run: |
+          cd ativ-07
+          docker compose down -v
