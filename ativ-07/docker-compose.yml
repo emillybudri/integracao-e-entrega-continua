@@ -1,6 +1,6 @@
 services:
   database:
-    image: mariadb:10.11
+    image: mariadb:10.11.19
     container_name: mariadb_wordpress
     restart: always
     environment:
@@ -20,19 +20,27 @@ services:
       start_period: 15s
 
   web:
-    image: wordpress:latest
+    build: .
+    image: portal-cicd-wordpress:local
     container_name: wordpress_web
     restart: always
     depends_on:
       database:
         condition: service_healthy
     ports:
-      - "8081:80"
+      - "${WP_PORT:-8081}:80"
     environment:
       WORDPRESS_DB_HOST: database:3306
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE:-wordpress_db}
       WORDPRESS_DB_USER: ${MYSQL_USER:-wp_user}
       WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD:-wp_password}
+      # Instalação automática no primeiro boot (sem o assistente do WordPress).
+      PORTAL_SITE_URL: http://localhost:${WP_PORT:-8081}
+      PORTAL_ADMIN_USER: ${PORTAL_ADMIN_USER:-admin}
+      PORTAL_ADMIN_PASSWORD: ${PORTAL_ADMIN_PASSWORD:-admin123}
+      PORTAL_ADMIN_EMAIL: ${PORTAL_ADMIN_EMAIL:-admin@example.com}
+      PORTAL_SEED_POSTS: ${PORTAL_SEED_POSTS:-1}
+      PORTAL_LOGIN_HINT: ${PORTAL_LOGIN_HINT:-1}
     volumes:
       - wordpress_data:/var/www/html
       - ./theme:/var/www/html/wp-content/themes/portal-cicd
