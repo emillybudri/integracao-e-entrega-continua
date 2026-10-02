@@ -84,3 +84,36 @@ jobs:
         run: |
           cd ativ-07
           docker compose down -v
+
+  testar-modo-demonstracao:
+    name: 3. Teste da imagem sem banco externo (modo demonstração)
+    needs: validar-configuracao
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Construir a imagem e subir sem nenhuma variável de ambiente
+        run: |
+          cd ativ-07
+          docker build -t portal-demo .
+          docker run -d --name portal-demo -p 8082:80 portal-demo
+
+      - name: Aguardar a instalação automática e validar o site
+        run: |
+          if ! timeout 180s bash -c 'until curl -s http://localhost:8082/ | grep -q "site-header"; do sleep 3; done'; then
+            echo "❌ O site não ficou pronto a tempo"
+            docker logs portal-demo
+            exit 1
+          fi
+          # Aguarda o término do provisionamento (publicações iniciais)
+          timeout 60s bash -c 'until docker logs portal-demo 2>&1 | grep -q "\[portal\] Pronto"; do sleep 2; done'
+          POSTS=$(curl -s http://localhost:8082/ | grep -c 'class="post-thumb"' || true)
+          echo "Publicações com imagem: $POSTS"
+          [ "$POSTS" -ge 4 ] || { echo "❌ Publicações iniciais não foram criadas"; docker logs portal-demo; exit 1; }
+          curl -s http://localhost:8082/wp-login.php | grep -q "Ambiente de demonstração" || { echo "❌ Tela de login sem a dica de acesso"; exit 1; }
+          echo "✅ Modo demonstração (SQLite) funcionando sem preencher nada"
+
+      - name: Finalizar e limpar
+        if: always()
+        run: docker rm -f portal-demo
