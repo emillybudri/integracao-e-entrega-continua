@@ -38,12 +38,15 @@ jobs:
           cd ativ-07
           docker compose up -d
 
-      - name: Aguardar inicialização e Healthcheck do Banco
+      - name: Aguardar inicialização do Banco e do WordPress
         run: |
           echo "Aguardando o MariaDB estar pronto (healthy)..."
-          cd ativ-07
           timeout 60s bash -c 'until [ "$(docker inspect --format="{{.State.Health.Status}}" mariadb_wordpress)" == "healthy" ]; do sleep 2; done'
           echo "MariaDB está saudável e pronto para conexões!"
+
+          echo "Aguardando o WordPress inicializar o Apache e os arquivos..."
+          timeout 60s bash -c 'until STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8081 || echo "000"); [ "$STATUS" -eq 200 ] || [ "$STATUS" -eq 302 ]; do sleep 3; done'
+          echo "WordPress pronto e respondendo requisições HTTP!"
 
       - name: Validar resposta da aplicação Web WordPress
         run: |
