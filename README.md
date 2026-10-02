@@ -46,7 +46,7 @@ integracao-e-entrega-continua/
 | 04 | 26/08 | Qualidade e segurança | [`ativ-04`](ativ-04/) | [`ativ-04`](.github/workflows/ativ-04-pipeline-qualidade-seguranca-js.yml) | ESLint, cobertura mínima de 80%, varredura de segredos |
 | 05 | 02/09 | Matrix Strategy | [`ativ-05`](ativ-05/) | [`ativ-05`](.github/workflows/ativ-05-pipeline-matrix-py.yml) | 3 Ubuntu × 2 Python = 6 execuções em paralelo |
 | 06 | 30/09 | Pudim com Dockerfile | [`ativ-06`](ativ-06/) | [`ativ-06`](.github/workflows/ativ-06-pipeline-docker-pudim.yml) | Dockerfile, NGINX Alpine, Docker Hub, Compose, Render |
-| 07 | 02/10 | WordPress + MariaDB | [`ativ-07`](ativ-07/) | [`ativ-07`](.github/workflows/ativ-07-pipeline-docker-wordpress.yml) | Compose multi-container, healthcheck, volumes, teste HTTP |
+| 07 | 02/10 | WordPress + MariaDB | [`ativ-07`](ativ-07/) | [`ativ-07`](.github/workflows/ativ-07-pipeline-docker-wordpress.yml) | Compose multi-container, healthcheck, volumes, instalação automática com WP-CLI, teste HTTP |
 
 <details>
 <summary><b>Detalhes de cada atividade</b></summary>
@@ -80,7 +80,8 @@ Ambiente **WordPress + MariaDB 10.11** orquestrado com Docker Compose, com um te
 
 - **Dados reais:** a página inicial mostra as versões de WordPress, PHP e MariaDB lidas do servidor em execução.
 - **CRUD pelo site:** logado, o botão **+** cria publicações e cada item ganha *Editar* e *Excluir*. As ações usam a REST API do WordPress, que valida permissão e nonce. Excluir envia para a lixeira.
-- **Sem bagunça no banco:** as publicações vivem no MariaDB. O repositório guarda só o tema e o `mu-plugin` que o ativa.
+- **Sobe já instalado:** uma imagem própria instala o WordPress sozinha no primeiro boot (WP-CLI), com idioma, tema, usuário e publicações iniciais. Sem assistente de instalação.
+- **Dados no banco:** as publicações vivem no MariaDB. O repositório guarda o tema, o conteúdo inicial e os scripts de instalação.
 - **Infra:** rede `bridge` dedicada, volumes `db_data` e `wordpress_data`, tema e `mu-plugins` montados por bind mount, e `depends_on` com `service_healthy`.
 
 <details>
@@ -93,9 +94,12 @@ Ambiente **WordPress + MariaDB 10.11** orquestrado com Docker Compose, com um te
 
 ```text
 ativ-07/
+├── Dockerfile                # WordPress + WP-CLI + tema + conteúdo inicial
 ├── docker-compose.yml        # WordPress + MariaDB, rede, volumes e healthcheck
-├── .env.example              # Variáveis do banco e do WordPress
-├── mu-plugins/               # Ativa o tema automaticamente
+├── .env.example              # Variáveis opcionais (porta, usuário, senha)
+├── docker/                   # Instalação automática no primeiro boot
+├── seed/                     # Publicações iniciais e ilustrações
+├── mu-plugins/               # Ativa o tema, ajusta a URL e a tela de login
 ├── theme/                    # Tema "Portal CI/CD" (PHP, CSS e JS)
 │   ├── parts/arquitetura.php # Ilustração SVG da arquitetura
 │   └── app.js                # CRUD via REST API
@@ -103,7 +107,7 @@ ativ-07/
 ```
 
 > [!TIP]
-> Para entrar e usar o CRUD, abra `http://localhost:8081`, clique em **Entrar** e use o usuário criado na instalação do WordPress.
+> **Acesso em 3 passos:** `docker compose up -d --build` na pasta `ativ-07/`, abra `http://localhost:8081` e clique em **Entrar**. A tela de login mostra o usuário e a senha (`admin` / `admin123`). Detalhes e deploy no Render em [`ativ-07/README.md`](ativ-07/README.md).
 
 ---
 
@@ -150,7 +154,7 @@ npm run lint && npm test && npm run test:coverage && npm run check-secrets
 cd ativ-06 && docker compose up -d
 
 # Atividade 07: http://localhost:8081
-cd ativ-07 && cp .env.example .env && docker compose up -d
+cd ativ-07 && docker compose up -d --build   # usuário admin, senha admin123
 docker compose ps          # estado dos containers
 docker compose down -v     # para tudo e apaga os volumes
 ```
