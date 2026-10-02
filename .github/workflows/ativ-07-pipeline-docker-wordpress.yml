@@ -51,6 +51,8 @@ jobs:
             exit 1
           fi
           echo "WordPress instalado e com o tema ativo!"
+          echo "Aguardando o término do provisionamento (publicações iniciais)..."
+          timeout 60s bash -c 'until docker logs wordpress_web 2>&1 | grep -q "\[portal\] Pronto"; do sleep 2; done'
 
       - name: Validar resposta da aplicação Web WordPress
         run: |

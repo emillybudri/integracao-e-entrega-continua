@@ -38,15 +38,15 @@ integracao-e-entrega-continua/
 
 ## 🗓️ Atividades
 
-| # | Data | Tema | Pasta | Workflow | Conceitos |
-|---|------|------|-------|----------|-----------|
-| 01 | 19/08 | Primeira pipeline | [`ativ-01`](ativ-01/) | [`ativ-01`](.github/workflows/ativ-01-primeira-pipeline-py.yml) | Git, branches, Pull Request, `pytest`, job condicional de deploy |
-| 02 | 19/08 | Calculadora em JavaScript | [`ativ-02`](ativ-02/) | [`ativ-02`](.github/workflows/ativ-02-pipeline-calculadora-js.yml) | Jest, 4 jobs paralelos, `needs` |
-| 03 | 26/08 | Linguagem favorita | n/a | [`ativ-03`](.github/workflows/ativ-03-pipeline-linguagem-favorita-js.yml) | `npm install`, `npm test`, bloco `run: \|` |
-| 04 | 26/08 | Qualidade e segurança | [`ativ-04`](ativ-04/) | [`ativ-04`](.github/workflows/ativ-04-pipeline-qualidade-seguranca-js.yml) | ESLint, cobertura mínima de 80%, varredura de segredos |
-| 05 | 02/09 | Matrix Strategy | [`ativ-05`](ativ-05/) | [`ativ-05`](.github/workflows/ativ-05-pipeline-matrix-py.yml) | 3 Ubuntu × 2 Python = 6 execuções em paralelo |
-| 06 | 30/09 | Pudim com Dockerfile | [`ativ-06`](ativ-06/) | [`ativ-06`](.github/workflows/ativ-06-pipeline-docker-pudim.yml) | Dockerfile, NGINX Alpine, Docker Hub, Compose, Render |
-| 07 | 02/10 | WordPress + MariaDB | [`ativ-07`](ativ-07/) | [`ativ-07`](.github/workflows/ativ-07-pipeline-docker-wordpress.yml) | Compose multi-container, healthcheck, volumes, instalação automática com WP-CLI, teste HTTP |
+| # | Data | Tema | Pasta | Workflow | Deploy / Link Online | Conceitos |
+|---|------|------|-------|----------|----------------------|-----------|
+| 01 | 19/08 | Primeira pipeline | [`ativ-01`](ativ-01/) | [`ativ-01`](.github/workflows/ativ-01-primeira-pipeline-py.yml) | — | Git, branches, Pull Request, `pytest`, job condicional de deploy |
+| 02 | 19/08 | Calculadora em JavaScript | [`ativ-02`](ativ-02/) | [`ativ-02`](.github/workflows/ativ-02-pipeline-calculadora-js.yml) | — | Jest, 4 jobs paralelos, `needs` |
+| 03 | 26/08 | Linguagem favorita | n/a | [`ativ-03`](.github/workflows/ativ-03-pipeline-linguagem-favorita-js.yml) | — | `npm install`, `npm test`, bloco `run: \|` |
+| 04 | 26/08 | Qualidade e segurança | [`ativ-04`](ativ-04/) | [`ativ-04`](.github/workflows/ativ-04-pipeline-qualidade-seguranca-js.yml) | — | ESLint, cobertura mínima de 80%, varredura de segredos |
+| 05 | 02/09 | Matrix Strategy | [`ativ-05`](ativ-05/) | [`ativ-05`](.github/workflows/ativ-05-pipeline-matrix-py.yml) | — | 3 Ubuntu × 2 Python = 6 execuções em paralelo |
+| 06 | 30/09 | Pudim com Dockerfile | [`ativ-06`](ativ-06/) | [`ativ-06`](.github/workflows/ativ-06-pipeline-docker-pudim.yml) | [Link Online](https://pudim-dockerfile-v1.onrender.com) | Dockerfile, NGINX Alpine, Docker Hub, Compose, Render |
+| 07 | 02/10 | WordPress + MariaDB | [`ativ-07`](ativ-07/) | [`ativ-07`](.github/workflows/ativ-07-pipeline-docker-wordpress.yml) | [Link Online](https://wordpress-e-mariadb-em-containers-docker.onrender.com) | Compose multi-container, healthcheck, volumes, instalação automática com WP-CLI, teste HTTP |
 
 <details>
 <summary><b>Detalhes de cada atividade</b></summary>
@@ -56,58 +56,10 @@ integracao-e-entrega-continua/
 - **03:** estrutura padrão em JavaScript, com comentários explicando cada comando e o operador multilinha `|`.
 - **04:** [`README`](ativ-04/README.md) próprio com a simulação dos 4 cenários de falha (lint, testes, cobertura e segredos). O script [`check-secrets.js`](ativ-04/scripts/check-secrets.js) varre o código atrás de credenciais expostas. A esteira tem os jobs `analise-linter`, `testes-unitarios`, `cobertura-codigo` e `analise-seguranca`, todos antes do `deploy`. Há também um [`Dockerfile`](ativ-04/Dockerfile) em estágios.
 - **05:** [`test_matrix.py`](ativ-05/test_matrix.py) executado em `ubuntu-latest`, `ubuntu-24.04` e `ubuntu-22.04`, cada um com Python 3.11 e 3.12.
-- **06:** clone do pudim.com.br servido por NGINX Alpine. A pipeline valida os arquivos, faz build e push da imagem `emillybudri/pudim-dockerfile:v1` e testa com `docker pull` e `docker compose up`. Em produção: [pudim-dockerfile-v1.onrender.com](https://pudim-dockerfile-v1.onrender.com/).
-- **07:** ambiente WordPress com tema próprio, banco MariaDB, healthcheck e CRUD de publicações pelo próprio site. Veja a seção abaixo.
+- **06:** clone do pudim.com.br servido por NGINX Alpine. A pipeline valida os arquivos, faz build e push da imagem `emillybudri/pudim-dockerfile:v1` e testa com `docker pull` e `docker compose up`. Em produção: [pudim-dockerfile-v1.onrender.com](https://pudim-dockerfile-v1.onrender.com).
+- **07:** ambiente WordPress com tema próprio, banco MariaDB, healthcheck e CRUD de publicações pelo próprio site. Em produção: [wordpress-e-mariadb-em-containers-docker.onrender.com](https://wordpress-e-mariadb-em-containers-docker.onrender.com).
 
 </details>
-
----
-
-## 🌐 Destaque: Atividade 07
-
-Ambiente **WordPress + MariaDB 10.11** orquestrado com Docker Compose, com um tema desenvolvido do zero, ilustração da arquitetura e gerenciamento de publicações direto na página.
-
-<table align="center">
-  <tr>
-    <th align="center" width="50%">Página inicial<br /><sub>Ambiente, diagrama e publicações</sub></th>
-    <th align="center" width="50%">Publicação<br /><sub>Imagem de destaque e conteúdo</sub></th>
-  </tr>
-  <tr>
-    <td align="center" width="50%"><img src="ativ-07/screenshots/home.png" alt="Página inicial do Portal CI/CD" width="420" /></td>
-    <td align="center" width="50%"><img src="ativ-07/screenshots/post.png" alt="Página de uma publicação" width="420" /></td>
-  </tr>
-</table>
-
-- **Dados reais:** a página inicial mostra as versões de WordPress, PHP e MariaDB lidas do servidor em execução.
-- **CRUD pelo site:** logado, o botão **+** cria publicações e cada item ganha *Editar* e *Excluir*. As ações usam a REST API do WordPress, que valida permissão e nonce. Excluir envia para a lixeira.
-- **Sobe já instalado:** uma imagem própria instala o WordPress sozinha no primeiro boot (WP-CLI), com idioma, tema, usuário e publicações iniciais. Sem assistente de instalação.
-- **Dados no banco:** as publicações vivem no MariaDB. O repositório guarda o tema, o conteúdo inicial e os scripts de instalação.
-- **Infra:** rede `bridge` dedicada, volumes `db_data` e `wordpress_data`, tema e `mu-plugins` montados por bind mount, e `depends_on` com `service_healthy`.
-
-<details>
-<summary><b>Ver o formulário de nova publicação</b></summary>
-
-<br />
-<img src="ativ-07/screenshots/crud-novo-post.png" alt="Formulário de nova publicação" width="640" />
-
-</details>
-
-```text
-ativ-07/
-├── Dockerfile                # WordPress + WP-CLI + tema + conteúdo inicial
-├── docker-compose.yml        # WordPress + MariaDB, rede, volumes e healthcheck
-├── .env.example              # Variáveis opcionais (porta, usuário, senha)
-├── docker/                   # Instalação automática no primeiro boot
-├── seed/                     # Publicações iniciais e ilustrações
-├── mu-plugins/               # Ativa o tema, ajusta a URL e a tela de login
-├── theme/                    # Tema "Portal CI/CD" (PHP, CSS e JS)
-│   ├── parts/arquitetura.php # Ilustração SVG da arquitetura
-│   └── app.js                # CRUD via REST API
-└── screenshots/              # Imagens usadas neste README
-```
-
-> [!TIP]
-> **Acesso em 3 passos:** `docker compose up -d --build` na pasta `ativ-07/`, abra `http://localhost:8081` e clique em **Entrar**. A tela de login mostra o usuário e a senha (`admin` / `admin123`). No Render, basta publicar a pasta `ativ-07` com Docker: sem banco externo ela entra em modo demonstração (SQLite) e abre pronta, sem preencher nada. Detalhes em [`ativ-07/README.md`](ativ-07/README.md).
 
 ---
 

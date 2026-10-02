@@ -2,10 +2,6 @@
 
 Ambiente completo de **CMS (WordPress)** com **banco relacional (MariaDB)**, orquestrado com Docker Compose. Ele sobe **já instalado**: sem assistente de instalação, com o tema ativo, publicações iniciais e um usuário pronto para entrar.
 
-<p align="center">
-  <img src="screenshots/home.png" alt="Página inicial do Portal CI/CD" width="520" />
-</p>
-
 ---
 
 ## ⚡ Acesso rápido
