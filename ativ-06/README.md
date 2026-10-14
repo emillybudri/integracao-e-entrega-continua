@@ -38,15 +38,15 @@ ativ-06/
 
 ### Opção 1: Usando Docker Compose com a Imagem do Docker Hub (Recomendado)
 
-Em vez de compilar o projeto localmente, utilize a imagem publicada no Docker Hub (`emillybudri/pudim-dockerfile:v1`) configurada no `docker-compose.yml`:
+Em vez de compilar o projeto localmente, utilize a imagem publicada no Docker Hub (`emillybudri/pudim-dockerfile:latest`) configurada no `docker-compose.yml`:
 
 ```yaml
 services:
   app:
-    image: emillybudri/pudim-dockerfile:v1
+    image: emillybudri/pudim-dockerfile:latest
     container_name: site-pudim-app
     ports:
-      - "8080:80"
+      - "6767:80"
     restart: always
 ```
 
@@ -56,7 +56,7 @@ docker compose up -d
 ```
 
 Acesse no navegador:
-`http://localhost:8080`
+`http://localhost:6767`
 
 Para parar o container:
 ```bash
@@ -65,17 +65,17 @@ docker compose down
 
 ---
 
-### Opção 2: Compilar a Imagem Localmente
+### Opção 2: Compilar e Executar Manualmente via Docker
 
 ```bash
 # 1. Construir a imagem Docker
-docker build -t pudim-dockerfile:v1 .
+docker build -t pudim-dockerfile:latest .
 
-# 2. Rodar o container na porta 8080
-docker run -d -p 8080:80 --name site-pudim pudim-dockerfile:v1
+# 2. Rodar o container na porta 6767
+docker run -d -p 6767:80 --name site-pudim-app pudim-dockerfile:latest
 
 # 3. Acesse no navegador:
-# http://localhost:8080
+# http://localhost:6767
 ```
 
 ---
@@ -94,30 +94,53 @@ Assim como o código-fonte vai para o GitHub, a imagem compilada vai para um **C
 
 2. **Carimbar / Taggear a imagem com o seu usuário do Docker Hub**:
    ```bash
-   docker tag pudim-dockerfile:v1 emillybudri/pudim-dockerfile:v1
+   docker tag pudim-dockerfile:latest emillybudri/pudim-dockerfile:latest
    ```
 
 3. **Publicar a Imagem no Registry (`docker push`)**:
    ```bash
-   docker push emillybudri/pudim-dockerfile:v1
+   docker push emillybudri/pudim-dockerfile:latest
    ```
 
 ---
 
-## 🌐 Deploy em Produção (Render Container)
+## ☁️ Deploy Contínuo (CD) no Servidor de Produção (Azure VM via SSH)
 
-A imagem Docker publicada no Docker Hub foi implantada com sucesso no **Render**:
+Seguindo a arquitetura de **Continuous Delivery** apresentada em aula (Slide 11 e 13):
 
-- **URL da Aplicação no Ar**: [https://pudim-dockerfile-v1.onrender.com/](https://pudim-dockerfile-v1.onrender.com/)
-- **Imagem Base no Docker Hub**: `emillybudri/pudim-dockerfile:v1`
+1. **Servidor Compartilhado na Azure**:
+   - `app-docker-aula` (aplicação do professor) roda na porta `80:80`.
+   - `site-pudim-app` (aplicação da Emilly) roda na porta `6767:80`.
+   - Ambos os containers coexistem de forma isolada na mesma VM.
+
+2. **Mecanismo de Transporte SSH**:
+   - O GitHub Actions conecta via SSH utilizando a action `appleboy/ssh-action@v1`.
+   - Utiliza os segredos criptografados:
+     - `AZURE_VM_HOST`: Endereço IP público da VM.
+     - `AZURE_VM_USER`: Usuário administrador da VM.
+     - `AZURE_VM_SSH_KEY`: Chave privada SSH.
+
+3. **Comando de Deploy Executado no Servidor**:
+   ```bash
+   docker pull emillybudri/pudim-dockerfile:latest
+   docker rm -f site-pudim-app || true
+   docker run -d --name site-pudim-app -p 6767:80 --restart unless-stopped emillybudri/pudim-dockerfile:latest
+   ```
+
+4. **Estágio de Aprovação (Environment Protection)**:
+   - Configurado com `environment: producao`.
+   - Exige aprovação manual (*Required Reviewers*) antes de disparar o deploy em produção, cumprindo o critério de Entrega Contínua (CD).
+
+- **URL da Aplicação no Servidor**: `http://<AZURE_VM_HOST>:6767`
+- **URL Alternativa (Render)**: [https://pudim-dockerfile-v1.onrender.com/](https://pudim-dockerfile-v1.onrender.com/)
 
 ---
 
 ## 🗂️ Arquivos Relacionados
 
-- **Workflow de CI**: [`.github/workflows/ativ-06-pipeline-docker-pudim.yml`](../.github/workflows/ativ-06-pipeline-docker-pudim.yml)
+- **Workflow de CI/CD**: [`.github/workflows/ativ-06-pipeline-docker-pudim.yml`](../.github/workflows/ativ-06-pipeline-docker-pudim.yml)
 - **Docker Compose**: [`docker-compose.yml`](docker-compose.yml)
-- **Código HTML**: [`index.html`](index.html)
+- **Código HTML com identificação do aluno**: [`index.html`](index.html)
 - **Dockerfile**: [`Dockerfile`](Dockerfile)
 
 

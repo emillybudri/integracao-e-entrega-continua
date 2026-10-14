@@ -45,7 +45,7 @@ integracao-e-entrega-continua/
 | 03 | 26/08 | Linguagem favorita | n/a | [`ativ-03`](.github/workflows/ativ-03-pipeline-linguagem-favorita-js.yml) | — | `npm install`, `npm test`, bloco `run: \|` |
 | 04 | 26/08 | Qualidade e segurança | [`ativ-04`](ativ-04/) | [`ativ-04`](.github/workflows/ativ-04-pipeline-qualidade-seguranca-js.yml) | — | ESLint, cobertura mínima de 80%, varredura de segredos |
 | 05 | 02/09 | Matrix Strategy | [`ativ-05`](ativ-05/) | [`ativ-05`](.github/workflows/ativ-05-pipeline-matrix-py.yml) | — | 3 Ubuntu × 2 Python = 6 execuções em paralelo |
-| 06 | 30/09 | Pudim com Dockerfile | [`ativ-06`](ativ-06/) | [`ativ-06`](.github/workflows/ativ-06-pipeline-docker-pudim.yml) | [Link Online](https://pudim-dockerfile-v1.onrender.com) | Dockerfile, NGINX Alpine, Docker Hub, Compose, Render |
+| 06 | 30/09 | Pudim Dockerfile (CD Azure VM) | [`ativ-06`](ativ-06/) | [`ativ-06`](.github/workflows/ativ-06-pipeline-docker-pudim.yml) | [Link Render](https://pudim-dockerfile-v1.onrender.com) · Azure VM: `:6767` | Dockerfile, NGINX Alpine, Docker Hub, CD via SSH (`appleboy/ssh-action`), Aprovação de Deploy, Porta 6767 |
 | 07 | 02/10 | WordPress + MariaDB | [`ativ-07`](ativ-07/) | [`ativ-07`](.github/workflows/ativ-07-pipeline-docker-wordpress.yml) | [Link Online](https://wordpress-e-mariadb-em-containers-docker.onrender.com) | Compose multi-container, healthcheck, volumes, instalação automática com WP-CLI, teste HTTP |
 
 <details>
@@ -56,7 +56,7 @@ integracao-e-entrega-continua/
 - **03:** estrutura padrão em JavaScript, com comentários explicando cada comando e o operador multilinha `|`.
 - **04:** [`README`](ativ-04/README.md) próprio com a simulação dos 4 cenários de falha (lint, testes, cobertura e segredos). O script [`check-secrets.js`](ativ-04/scripts/check-secrets.js) varre o código atrás de credenciais expostas. A esteira tem os jobs `analise-linter`, `testes-unitarios`, `cobertura-codigo` e `analise-seguranca`, todos antes do `deploy`. Há também um [`Dockerfile`](ativ-04/Dockerfile) em estágios.
 - **05:** [`test_matrix.py`](ativ-05/test_matrix.py) executado em `ubuntu-latest`, `ubuntu-24.04` e `ubuntu-22.04`, cada um com Python 3.11 e 3.12.
-- **06:** clone do pudim.com.br servido por NGINX Alpine. A pipeline valida os arquivos, faz build e push da imagem `emillybudri/pudim-dockerfile:v1` e testa com `docker pull` e `docker compose up`. Em produção: [pudim-dockerfile-v1.onrender.com](https://pudim-dockerfile-v1.onrender.com).
+- **06:** clone do pudim.com.br servido por NGINX Alpine com identificação da aluna Emilly Budri Bognar. A esteira realiza validação de arquivos, build e push para Docker Hub (`pudim-dockerfile:latest`), teste com docker compose na porta 6767 e deploy contínuo (CD) na VM do Azure via SSH (`appleboy/ssh-action`) na porta 6767 com estágio de aprovação manual (*environment protection*).
 - **07:** ambiente WordPress com tema próprio, banco MariaDB, healthcheck e CRUD de publicações pelo próprio site. Em produção: [wordpress-e-mariadb-em-containers-docker.onrender.com](https://wordpress-e-mariadb-em-containers-docker.onrender.com).
 
 </details>
@@ -102,7 +102,7 @@ npm run lint && npm test && npm run test:coverage && npm run check-secrets
 **Docker** (atividades 06 e 07)
 
 ```bash
-# Atividade 06: http://localhost:8080
+# Atividade 06: http://localhost:6767
 cd ativ-06 && docker compose up -d
 
 # Atividade 07: http://localhost:8081

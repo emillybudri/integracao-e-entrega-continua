@@ -11,6 +11,7 @@ on:
     paths:
       - 'ativ-06/**'
       - '.github/workflows/ativ-06-pipeline-docker-pudim.yml'
+  workflow_dispatch:
 
 jobs:
   validacao-arquivos:
@@ -57,6 +58,8 @@ jobs:
           tags: |
             emillybudri/pudim-dockerfile:v1
             emillybudri/pudim-dockerfile:latest
+            ${{ secrets.DOCKER_USER || secrets.DOCKERHUB_USERNAME || 'emillybudri' }}/pudim-dockerfile:v1
+            ${{ secrets.DOCKER_USER || secrets.DOCKERHUB_USERNAME || 'emillybudri' }}/pudim-dockerfile:latest
         env:
           CAN_PUSH: ${{ (secrets.DOCKER_PASS != '' || secrets.DOCKERHUB_TOKEN != '') && 'true' || 'false' }}
 
@@ -70,21 +73,21 @@ jobs:
 
       - name: Realizar Docker Pull da Imagem Publicada
         run: |
-          echo "Efetuando pull da imagem emillybudri/pudim-dockerfile:v1..."
-          docker pull emillybudri/pudim-dockerfile:v1
+          echo "Efetuando pull da imagem pudim-dockerfile do Docker Hub..."
+          docker pull emillybudri/pudim-dockerfile:latest || docker pull emillybudri/pudim-dockerfile:v1
 
       - name: Executar Container via Docker Compose
         run: |
-          echo "Subindo container a partir da imagem do Docker Hub usando docker-compose.yml..."
+          echo "Subindo container a partir da imagem usando docker-compose.yml..."
           docker compose -f ativ-06/docker-compose.yml up -d
           docker ps
 
-      - name: Verificar se o servico responde HTTP 200 OK
+      - name: Verificar se o servico responde HTTP 200 OK na porta 6767
         run: |
-          echo "Verificando se a aplicacao esta rodando na porta 8080..."
+          echo "Verificando se a aplicacao esta rodando na porta 6767..."
           sleep 2
-          curl -f http://localhost:8080 || (echo "Erro ao acessar a aplicacao rodando via Docker" && exit 1)
-          echo "Conexao bem sucedida! A imagem Docker Hub emillybudri/pudim-dockerfile:v1 esta funcionando perfeitamente."
+          curl -f http://localhost:6767 || (echo "Erro ao acessar a aplicacao rodando via Docker na porta 6767" && exit 1)
+          echo "Conexao bem sucedida! A aplicacao respondeu HTTP 200 OK na porta 6767."
 
       - name: Finalizar e Parar Containers
         if: always()
@@ -92,12 +95,44 @@ jobs:
           docker compose -f ativ-06/docker-compose.yml down
 
   deploy:
-    name: Deploy / Confirmacao
+    name: Deploy no Servidor Azure VM (Porta 6767)
     needs: [validacao-arquivos, build, teste-pull-e-execucao]
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    environment: producao
     steps:
-      - name: Confirmacao de Build e Deploy
-        run: |
-          echo "Pipeline da Atividade 06 executada com sucesso!"
-          echo "Imagem Docker Hub emillybudri/pudim-dockerfile:v1 validada via docker pull e docker compose."
+      - name: Implantar na VM via SSH (Porta 6767)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.AZURE_VM_HOST }}
+          username: ${{ secrets.AZURE_VM_USER }}
+          key: ${{ secrets.AZURE_VM_SSH_KEY }}
+          script: |
+            DOCKER_USER="${{ secrets.DOCKER_USER || secrets.DOCKERHUB_USERNAME || 'emillybudri' }}"
+            IMAGE_NAME="$DOCKER_USER/pudim-dockerfile:latest"
 
+            echo "=========================================="
+            echo "Iniciando CD do Site Pudim na Azure VM"
+            echo "Porta Alvo: 6767"
+            echo "Imagem Docker: $IMAGE_NAME"
+            echo "=========================================="
+
+            echo "1. Baixando imagem atualizada do Docker Hub..."
+            docker pull $IMAGE_NAME || docker pull emillybudri/pudim-dockerfile:latest
+
+            echo "2. Parando container anterior (se existir)..."
+            docker rm -f site-pudim-app || true
+
+            echo "3. Subindo container Pudim na porta 6767..."
+            docker run -d \
+              --name site-pudim-app \
+              -p 6767:80 \
+              --restart unless-stopped \
+              $IMAGE_NAME
+
+            echo "4. Validando containers em execucao:"
+            docker ps --filter "name=site-pudim-app"
+
+            echo "=========================================="
+            echo "Deploy concluido com sucesso na porta 6767!"
+            echo "=========================================="

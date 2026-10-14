@@ -1,7 +1,7 @@
 services:
   app:
-    image: emillybudri/pudim-dockerfile:v1
+    image: emillybudri/pudim-dockerfile:latest
     container_name: site-pudim-app
     ports:
-      - "8080:80"
+      - "6767:80"
     restart: always
