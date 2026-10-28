@@ -25,6 +25,7 @@ integracao-e-entrega-continua/
 ├── ativ-05/                  # Estratégia de Matrix (Python)
 ├── ativ-06/                  # Dockerfile, Docker Hub e deploy no Render
 ├── ativ-07/                  # WordPress + MariaDB com Docker Compose
+├── ativ-08/                  # Mural de mensagens Flask + MariaDB (CD com Docker Compose)
 ├── estudos/                  # Guia de conceitos e resumo para a prova
 ├── requirements.txt          # Dependências Python dos estudos
 ├── sonar-project.properties  # Configuração do SonarCloud
@@ -47,6 +48,7 @@ integracao-e-entrega-continua/
 | 05 | 02/09 | Matrix Strategy | [`ativ-05`](ativ-05/) | [`ativ-05`](.github/workflows/ativ-05-pipeline-matrix-py.yml) | — | 3 Ubuntu × 2 Python = 6 execuções em paralelo |
 | 06 | 30/09 | Pudim Dockerfile (CD Azure VM) | [`ativ-06`](ativ-06/) | [`ativ-06`](.github/workflows/ativ-06-pipeline-docker-pudim.yml) | [Link Render](https://pudim-dockerfile-v1.onrender.com) · Azure VM: `:6767` | Dockerfile, NGINX Alpine, Docker Hub, CD via SSH (`appleboy/ssh-action`), Aprovação de Deploy, Porta 6767 |
 | 07 | 02/10 | WordPress + MariaDB | [`ativ-07`](ativ-07/) | [`ativ-07`](.github/workflows/ativ-07-pipeline-docker-wordpress.yml) | [Link Online](https://wordpress-e-mariadb-em-containers-docker.onrender.com) | Compose multi-container, healthcheck, volumes, instalação automática com WP-CLI, teste HTTP |
+| 08 | 28/10 | Mural Flask + MariaDB (CD Compose) | [`ativ-08`](ativ-08/) | [`ativ-08`](.github/workflows/ativ-08-pipeline-docker-mural.yml) | Azure VM: `:6767` | Docker Compose, Flask + MariaDB, Build/Push Docker Hub (`emillybudri/mural-flask`), Teste HTTP e Deploy via SSH |
 
 <details>
 <summary><b>Detalhes de cada atividade</b></summary>
@@ -58,6 +60,7 @@ integracao-e-entrega-continua/
 - **05:** [`test_matrix.py`](ativ-05/test_matrix.py) executado em `ubuntu-latest`, `ubuntu-24.04` e `ubuntu-22.04`, cada um com Python 3.11 e 3.12.
 - **06:** clone do pudim.com.br servido por NGINX Alpine com identificação da aluna Emilly Budri Bognar. A esteira realiza validação de arquivos, build e push para Docker Hub (`pudim-dockerfile:latest`), teste com docker compose na porta 6767 e deploy contínuo (CD) na VM do Azure via SSH (`appleboy/ssh-action`) na porta 6767 com estágio de aprovação manual (*environment protection*).
 - **07:** ambiente WordPress com tema próprio, banco MariaDB, healthcheck e CRUD de publicações pelo próprio site. Em produção: [wordpress-e-mariadb-em-containers-docker.onrender.com](https://wordpress-e-mariadb-em-containers-docker.onrender.com).
+- **08:** aplicação web de mural de mensagens com Flask e MariaDB orquestrada via Docker Compose na porta `6767`, com build e publicação da imagem `emillybudri/mural-flask:latest`, teste de integração e deploy contínuo (CD) via SSH na VM Azure.
 
 </details>
 
@@ -76,6 +79,7 @@ integracao-e-entrega-continua/
 | [`ativ-05`](.github/workflows/ativ-05-pipeline-matrix-py.yml) | `qualidade` (matriz de 6 execuções) | `push` e `pull_request` |
 | [`ativ-06`](.github/workflows/ativ-06-pipeline-docker-pudim.yml) | `validacao-arquivos` → `build` → `teste-pull-e-execucao` → `deploy` | `push` e `pull_request` |
 | [`ativ-07`](.github/workflows/ativ-07-pipeline-docker-wordpress.yml) | `validar-configuracao` → `testar-ambiente-wordpress` | `push` e `pull_request` em `ativ-07/**` |
+| [`ativ-08`](.github/workflows/ativ-08-pipeline-docker-mural.yml) | `build-publish` → `test` → `deploy` | `push` e `pull_request` em `ativ-08/**` |
 | [`sonarcloud`](.github/workflows/sonarcloud.yml) | `sonarcloud` (análise de qualidade) | `push` e `pull_request` |
 
 ---

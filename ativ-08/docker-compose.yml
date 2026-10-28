@@ -1,0 +1,30 @@
+services:
+  app:
+    build: .
+    image: emillybudri/mural-flask:latest
+    ports:
+      - "6767:5000"
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: mural
+      DB_USER: mural_user
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_DATABASE: mural
+      MARIADB_USER: mural_user
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - dados_mariadb:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  dados_mariadb:
+

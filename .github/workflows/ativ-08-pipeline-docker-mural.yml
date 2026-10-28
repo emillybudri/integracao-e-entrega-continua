@@ -1,0 +1,153 @@
+name: Atividade 08 - Pipeline Docker Compose Mural Flask (28/10/2026)
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'ativ-08/**'
+      - '.github/workflows/ativ-08-pipeline-docker-mural.yml'
+  pull_request:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'ativ-08/**'
+      - '.github/workflows/ativ-08-pipeline-docker-mural.yml'
+  workflow_dispatch:
+
+jobs:
+  build-publish:
+    name: 1. Build e Publicação da Imagem
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ativ-08
+    env:
+      # Valores temporários para resolver as variáveis do Compose.
+      # Este job não inicia o MariaDB.
+      DB_PASSWORD: build-placeholder
+      DB_ROOT_PASSWORD: build-placeholder
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validar Compose
+        run: docker compose config -q
+
+      - name: Build da imagem
+        run: docker compose build app
+
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME || secrets.DOCKER_USER || 'emillybudri' }}
+          password: ${{ secrets.DOCKERHUB_TOKEN || secrets.DOCKER_PASS }}
+
+      - name: Publicar imagem
+        run: docker compose push app
+
+  # 2. BAIXAR E TESTAR A IMAGEM PUBLICADA
+  test:
+    name: 2. Baixar e Testar Imagem Publicada (Porta 6767)
+    needs: build-publish
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ativ-08
+    env:
+      DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD || 'test_pass_123' }}
+      DB_ROOT_PASSWORD: ${{ secrets.TEST_DB_ROOT_PASSWORD || 'test_root_123' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME || secrets.DOCKER_USER || 'emillybudri' }}
+          password: ${{ secrets.DOCKERHUB_TOKEN || secrets.DOCKER_PASS }}
+
+      - name: Baixar imagem publicada
+        run: docker compose pull app
+
+      - name: Subir aplicação e banco
+        run: docker compose up -d --no-build db app
+
+      - name: Testar resposta HTTP na porta 6767
+        run: |
+          for i in $(seq 1 40); do
+            if curl --fail --silent --output /dev/null \
+              http://localhost:6767/; then
+              echo "Aplicacao respondeu com sucesso na porta 6767!"
+              exit 0
+            fi
+
+            echo "Tentativa $i de 40. Aguardando a aplicacao..."
+            sleep 3
+          done
+
+          echo "A aplicacao nao respondeu no tempo esperado."
+          docker compose ps -a
+          docker compose logs --no-color app db
+          exit 1
+
+      - name: Encerrar containers
+        if: always()
+        run: docker compose down -v
+
+  # 3. DEPLOY NO AZURE
+  deploy:
+    name: 3. Deploy via SSH na Azure VM (Porta 6767)
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        env:
+          DEPLOY_REPOSITORY: ${{ github.repository }}
+          PROD_DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+          PROD_DB_ROOT_PASSWORD: ${{ secrets.PROD_DB_ROOT_PASSWORD }}
+        with:
+          host: ${{ secrets.SSH_HOST || secrets.AZURE_VM_HOST }}
+          username: ${{ secrets.SSH_USER || secrets.AZURE_VM_USER }}
+          key: ${{ secrets.SSH_KEY || secrets.AZURE_VM_SSH_KEY }}
+          envs: DEPLOY_REPOSITORY,PROD_DB_PASSWORD,PROD_DB_ROOT_PASSWORD
+          script: |
+            set -e
+
+            # Identifica o repositorio e cria um nome exclusivo
+            PROJECT_NAME="emillybudri"
+            PROJECT_DIR="$HOME/$PROJECT_NAME"
+            REPO_URL="https://github.com/${DEPLOY_REPOSITORY}.git"
+
+            # Clona se nao existir
+            if [ ! -d "$PROJECT_DIR/.git" ]; then
+              git clone "$REPO_URL" "$PROJECT_DIR"
+            fi
+
+            cd "$PROJECT_DIR"
+            git pull origin main
+
+            # Se estiver no monorepo com ativ-08, entra na pasta ativ-08
+            if [ -d "ativ-08" ]; then
+              cd ativ-08
+            fi
+
+            # Cria o .env desse projeto
+            umask 077
+            printf "DB_PASSWORD='%s'\nDB_ROOT_PASSWORD='%s'\n" \
+              "$PROD_DB_PASSWORD" "$PROD_DB_ROOT_PASSWORD" > .env
+            chmod 600 .env
+
+            # Atualiza somente o projeto desse grupo
+            docker compose -p "$PROJECT_NAME" config -q
+            docker compose -p "$PROJECT_NAME" pull
+            docker compose -p "$PROJECT_NAME" up -d --no-build --remove-orphans
+            docker compose -p "$PROJECT_NAME" ps
+
